@@ -1,0 +1,666 @@
+import pandas as pd
+
+# Dosya yolunu belirt
+file_path = '/Users/lemannur/Downloads/cell proportions all samples.xlsx'
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı kontrol et
+print(df.head())
+
+#HIYERARSIK KUMELEME:
+
+#oncelikle tablonun formatini degistiriyoum:
+
+# Long format'tan wide formata geç
+df_wide = df.pivot_table(index='library', columns='cluster', values='prop', fill_value=0)
+
+# Sonuç kontrol
+print(df_wide.head())
+#su an her sample icin bir vektor var
+#her vektor o sampledeki 20 hucre tipinin oranini iceriyor
+
+#1. veri odakli kumeleme
+#oncelikle sampleleri hangi hucre tipine gore dominant -yogun vs gibi kategorize edecegim
+#1.heatmap_clustering:
+#once bir heatmap-hangi sampleler bir birine benziyor
+#hangi hucre tipleri birlikte yukselebiliyor:
+from sklearn.preprocessing import StandardScaler
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Z-score normalizasyon
+scaler = StandardScaler()
+df_scaled = pd.DataFrame(scaler.fit_transform(df_wide),
+                         index=df_wide.index,
+                         columns=df_wide.columns)
+
+# Heatmap + dendrogram
+sns.clustermap(df_scaled, method='ward', cmap='vlag', figsize=(12, 10))
+plt.show()
+#her sample hangi grupta?
+from scipy.cluster.hierarchy import linkage, fcluster
+
+# Hiyerarşik kümeleme (Ward yöntemi)
+Z = linkage(df_scaled, method='ward')
+
+# Kaç grup istiyorsan onu belirt (örnek: 3)
+df_scaled['cluster'] = fcluster(Z, t=3, criterion='maxclust')
+
+# Grupları gör
+print(df_scaled['cluster'].value_counts())
+
+#SONUC:
+#hücre kompozisyonlarına göre benzer hastaların birlikte gruplanması:
+#Grup 3 → 29 hasta
+#Grup 2 → 27 hasta
+#Grup 1 → 4 hasta
+#her hücre tipi için 3 grubun ortalama oranları:
+
+# Grupları eski df_wide matrisine ekle
+df_wide['cluster'] = df_scaled['cluster']
+
+# Her grubun ortalama hücre oranlarını hesapla
+group_profiles = df_wide.groupby('cluster').mean()
+
+# Sonuçlara bakalım
+print(group_profiles.T)
+
+group_profiles.T.sort_values(by=[1, 2, 3], ascending=False)
+#grup 2 immune high
+#grup 3 immune low
+#grup 1 outlier
+
+# her sample'a ait cluster bilgisini sakliyorum
+# Sample ID (library) ve ait olduğu cluster bilgisini içeren yeni bir dataframe oluştur
+df_clusters = df_wide[['cluster']].copy()
+df_clusters.reset_index(inplace=True)
+df_clusters.columns = ['library', 'cluster']
+
+# Gruplara isim eklemek istersen (opsiyonel ama faydalı)
+group_labels = {
+    1: 'Outlier_or_Mixed',
+    2: 'Immune_High',
+    3: 'Epithelial_Dominant'
+}
+df_clusters['group_label'] = df_clusters['cluster'].map(group_labels)
+
+# Kontrol edelim
+print(df_clusters.head())
+
+# CSV olarak kaydet (istersen Excel de olur)
+df_clusters.to_csv('/Users/lemannur/Downloads/sample_clusters.csv', index=False)
+
+#hucre tipleri gruplar arasinda nasil degisiyor
+
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Hücre tipleri arasından görselleştirmek istediklerimizi seç
+selected_cell_types = ['EpiT', 'TCD4', 'TCD8', 'Macro']
+
+# Boxplot çizmek için, df_wide ve cluster bilgisini birleştirelim
+plot_df = df_wide[selected_cell_types + ['cluster']].copy()
+plot_df = plot_df.melt(id_vars='cluster', var_name='cell_type', value_name='proportion')
+
+# Boxplot
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='cell_type', y='proportion', hue='cluster', data=plot_df)
+plt.title('Selected Cell Type Proportions by Cluster')
+plt.ylabel('Proportion')
+plt.xlabel('Cell Type')
+plt.legend(title='Cluster')
+plt.tight_layout()
+plt.show()
+
+#hucre tipleri gruplara gore nasil degisiyor?
+#1. grubu cikariyorum
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Seçilen hücre tipleri
+selected_cell_types = ['EpiT', 'TCD4', 'TCD8', 'Macro']
+
+# Grup 1 hariç tut
+filtered_df = df_wide[df_wide['cluster'] != 1]
+
+# Görselleştirme için uzun format
+plot_df = filtered_df[selected_cell_types + ['cluster']].copy()
+plot_df = plot_df.melt(id_vars='cluster', var_name='cell_type', value_name='proportion')
+
+# Boxplot
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='cell_type', y='proportion', hue='cluster', data=plot_df)
+plt.title('Selected Cell Type Proportions by Cluster (Clusters 2 & 3)')
+plt.ylabel('Proportion')
+plt.xlabel('Cell Type')
+plt.legend(title='Cluster')
+plt.tight_layout()
+plt.show()
+
+#PCA
+
+#cluster 1'de sacma sapan 4 ornek var, onlari dislayarak PCA yapiyorum
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
+# Sadece Cluster 2 ve 3'ü al
+df_pca = df_wide[df_wide['cluster'] != 1].drop(columns=['cluster'])
+
+# PCA modeli uygula
+pca = PCA(n_components=2)
+pca_result = pca.fit_transform(df_pca)
+
+# Cluster etiketlerini al
+clusters = df_wide[df_wide['cluster'] != 1]['cluster'].values
+
+# Görselleştir
+plt.figure(figsize=(8,6))
+plt.scatter(pca_result[:,0], pca_result[:,1], c=clusters, cmap='coolwarm', alpha=0.8)
+plt.xlabel('PC1')
+plt.ylabel('PC2')
+plt.title('PCA of Samples Based on Cell Type Composition')
+plt.grid(True)
+plt.colorbar(label='Cluster')
+plt.tight_layout()
+plt.show()
+
+#gruplar arasinda gercekten istatistiksel fark var mi?
+#t-test
+from scipy.stats import ttest_ind
+
+# PC1 değerlerini al
+pc1_values = pca_result[:, 0]
+cluster_labels = clusters  # cluster 2 ve 3
+
+# Gruplara ayır
+pc1_group2 = pc1_values[cluster_labels == 2]
+pc1_group3 = pc1_values[cluster_labels == 3]
+
+# t-testi
+t_stat, p_value = ttest_ind(pc1_group2, pc1_group3)
+print(f"PC1 farkı için p-değeri: {p_value:.4f}")
+#korelasyonlari gormek istersen bu kodu oynat:
+#PC1 ekseni ile her hücre tipinin oranı arasında korelasyon nedir?
+# Hücre oranlarının PC1 ile korelasyonuna bakalım
+import pandas as pd
+
+pc1_series = pd.Series(pc1_values, index=df_pca.index)
+correlations = df_pca.corrwith(pc1_series).sort_values(ascending=False)
+print(correlations.head(10))
+print(correlations.tail(10))
+
+
+#yukaridaki korelasyonu gostermek icin kod PC1 ekseni ile:
+import matplotlib.pyplot as plt
+
+# Korelasyon değerlerini birleştir
+correlations = df_pca.corrwith(pd.Series(pca_result[:,0], index=df_pca.index)).sort_values()
+
+# Barplot
+plt.figure(figsize=(10, 6))
+correlations.plot(kind='barh', color=['#377eb8' if x < 0 else '#e41a1c' for x in correlations])
+plt.axvline(0, color='black', linewidth=0.8)
+plt.title('Correlation of Cell Type Proportions with PC1')
+plt.xlabel('Pearson Correlation')
+plt.tight_layout()
+plt.show()
+
+#bu kod parcasi, bizim PCA'daki 1. ve 2. varyanslarin orneklerin ne kadarini kapsadigini acikliyor
+print(pca.explained_variance_ratio_)
+
+# PC2 ile korelasyon
+pc2_series = pd.Series(pca_result[:,1], index=df_pca.index)
+correlations_pc2 = df_pca.corrwith(pc2_series).sort_values()
+print(correlations_pc2)
+#PC2 barplot
+# PC2 değerleri
+pc2_series = pd.Series(pca_result[:, 1], index=df_pca.index)
+
+# Hücre tipleri ile PC2 arasındaki korelasyonları hesapla
+pc2_correlations = df_pca.corrwith(pc2_series).sort_values()
+
+# Barplot çiz
+plt.figure(figsize=(10, 6))
+pc2_correlations.plot(kind='barh', color=['#377eb8' if x < 0 else '#e41a1c' for x in pc2_correlations])
+plt.axvline(0, color='black', linewidth=0.8)
+plt.title('Correlation of Cell Type Proportions with PC2')
+plt.xlabel('Pearson Correlation with PC2')
+plt.tight_layout()
+plt.show()
+
+#simdi PC2'ye dayanarak T8 yuksekse macro dusuk mu bakiyorum:
+from scipy.stats import pearsonr
+
+# TCD8 ve Macro oranları (Cluster 2 + 3 için)
+tcd8_vals = df_pca['TCD8']
+macro_vals = df_pca['Macro']
+
+# Pearson korelasyon
+r, p_value = pearsonr(tcd8_vals, macro_vals)
+print(f"Korelasyon katsayısı (r): {r:.3f}, p-değeri: {p_value:.4e}")
+#gorsele dokuyorum, anlamli gelmedi:
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(6, 5))
+sns.regplot(x=tcd8_vals, y=macro_vals, scatter_kws={'alpha':0.7})
+plt.xlabel('TCD8 Proportion')
+plt.ylabel('Macro Proportion')
+plt.title('TCD8 vs Macro: Pearson Correlation')
+plt.tight_layout()
+plt.show()
+
+#cluster 2 ve 3 te T8'ler anlamli mi diye hem paramterik hem non parametrik olarak p value bakiyorum
+from scipy.stats import mannwhitneyu
+
+stat, p_val_mw = mannwhitneyu(tcd8_group2, tcd8_group3, alternative='two-sided')
+print(f"Mann-Whitney U testi: p-değeri = {p_val_mw:.4f}")
+
+#parametrik:
+from scipy.stats import ttest_ind
+
+# Cluster etiketleri
+cluster_labels = df_wide['cluster']
+
+# Boş bir listeye sonuçları topla
+results = []
+
+# Her hücre tipi için
+for cell_type in df_wide.columns[:-1]:  # 'cluster' dışındaki tüm hücreler
+    group2_vals = df_wide[cell_type][cluster_labels == 2]
+    group3_vals = df_wide[cell_type][cluster_labels == 3]
+
+    t_stat, p_val = ttest_ind(group2_vals, group3_vals, equal_var=False)
+
+    results.append({
+        'cell_type': cell_type,
+        'mean_cluster2': group2_vals.mean(),
+        'mean_cluster3': group3_vals.mean(),
+        'p_value': p_val
+    })
+
+# DataFrame olarak göster
+import pandas as pd
+
+results_df = pd.DataFrame(results).sort_values('p_value')
+import ace_tools as tools;
+
+tools.display_dataframe_to_user(name="Cluster Group Comparison", dataframe=results_df)
+
+#ikisinde de anlamli cikmadi
+
+#Cd4e bakiyorum:
+from scipy.stats import ttest_ind, mannwhitneyu
+
+# TCD4 oranlarını al
+tcd4_vals = df_wide['TCD4']
+cluster_labels = df_wide['cluster']
+
+# Cluster 2 ve 3'e ayır
+tcd4_group2 = tcd4_vals[cluster_labels == 2]
+tcd4_group3 = tcd4_vals[cluster_labels == 3]
+
+# T-test
+t_stat, p_val_t = ttest_ind(tcd4_group2, tcd4_group3, equal_var=False)
+
+# Mann-Whitney U testi
+stat_mw, p_val_mw = mannwhitneyu(tcd4_group2, tcd4_group3, alternative='two-sided')
+
+# Sonuçları yazdır
+print(f"TCD4 (Cluster 2 vs 3):")
+print(f"  t-test p-değeri       = {p_val_t:.4f}")
+print(f"  Mann-Whitney p-değeri = {p_val_mw:.4f}")
+print(f"  Ortalama Cluster 2: {tcd4_group2.mean():.4f}")
+print(f"  Ortalama Cluster 3: {tcd4_group3.mean():.4f}")
+
+#tum hucreler icin bakiyorum simdi
+from scipy.stats import ttest_ind, mannwhitneyu
+import pandas as pd
+
+# Hücre tipleri (cluster kolonunu dışla)
+cell_types = df_wide.columns.drop('cluster')
+
+# Sonuçları burada toplayacağız
+results = []
+
+for cell in cell_types:
+    group2_vals = df_wide[cell][df_wide['cluster'] == 2]
+    group3_vals = df_wide[cell][df_wide['cluster'] == 3]
+
+    # t-test
+    t_stat, p_t = ttest_ind(group2_vals, group3_vals, equal_var=False)
+
+    # Mann–Whitney U testi
+    u_stat, p_mw = mannwhitneyu(group2_vals, group3_vals, alternative='two-sided')
+
+    results.append({
+        'cell_type': cell,
+        'mean_cluster2': group2_vals.mean(),
+        'mean_cluster3': group3_vals.mean(),
+        't-test_p': p_t,
+        'mannwhitney_p': p_mw
+    })
+
+# DataFrame olarak düzenle ve p-değerine göre sırala
+results_df = pd.DataFrame(results).sort_values('mannwhitney_p')
+
+# Sonuçları göster
+print(results_df)
+
+
+#en anlamli fark getiren hucre tipleri icin boxplot:
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Hücre tipleri
+selected_cells = ['Macro', 'DC', 'Mono', 'EpiT', 'Epi']
+
+# Sadece Cluster 2 ve 3 için dataframe hazırla
+df_plot = df_wide[df_wide['cluster'].isin([2, 3])][selected_cells + ['cluster']].copy()
+
+# Uzun formatta melt et
+df_long = df_plot.melt(id_vars='cluster', var_name='cell_type', value_name='proportion')
+
+# Boxplot
+plt.figure(figsize=(10, 6))
+sns.boxplot(data=df_long, x='cell_type', y='proportion', hue='cluster')
+plt.title('Cluster 2 vs Cluster 3 – Statistically Different Cell Types')
+plt.xlabel('Cell Type')
+plt.ylabel('Proportion')
+plt.legend(title='Cluster')
+plt.tight_layout()
+plt.show()
+
+#p<0.05 olan tum hucreler icin:
+# p < 0.05 olan hücre tiplerini seç
+significant_cells = results_df[results_df['mannwhitney_p'] < 0.05]['cell_type'].tolist()
+print(significant_cells)
+# Boxplot için sadece anlamlı hücreler + cluster bilgisi
+df_plot = df_wide[df_wide['cluster'].isin([2, 3])][significant_cells + ['cluster']].copy()
+
+# Uzun format
+df_long = df_plot.melt(id_vars='cluster', var_name='cell_type', value_name='proportion')
+
+# Plot
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(12, 6))
+sns.boxplot(data=df_long, x='cell_type', y='proportion', hue='cluster')
+plt.title('Cluster 2 vs Cluster 3 – All Significantly Different Cell Types (p < 0.05)')
+plt.xlabel('Cell Type')
+plt.ylabel('Proportion')
+plt.legend(title='Cluster')
+plt.tight_layout()
+plt.xticks(rotation=45)
+plt.show()
+
+
+#combined:
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# --- VERİYİ HAZIRLA ---
+
+# Sadece Cluster 2 ve 3
+df_sub = df_wide[df_wide['cluster'].isin([2,3])]
+cell_types = df_sub.columns.drop('cluster')
+
+# Standardize et
+scaler = StandardScaler()
+df_scaled = pd.DataFrame(scaler.fit_transform(df_sub[cell_types]), columns=cell_types, index=df_sub.index)
+
+# PCA
+pca = PCA(n_components=2)
+pca_result = pca.fit_transform(df_scaled)
+df_sub['PC1'] = pca_result[:,0]
+df_sub['PC2'] = pca_result[:,1]
+
+# PC1 ile korelasyonları hesapla
+pc1_corr = df_sub[cell_types].corrwith(df_sub['PC1']).sort_values()
+
+# p < 0.05 olan hücre tiplerini daha önce bulmuştuk:
+significant_cells = results_df[results_df['mannwhitney_p'] < 0.05]['cell_type'].tolist()
+
+# --- GRAFİĞİ OLUŞTUR ---
+
+fig, axs = plt.subplots(1, 3, figsize=(20, 6))
+
+# PANEL A: PCA SCATTER
+sns.scatterplot(x='PC1', y='PC2', hue='cluster', data=df_sub, ax=axs[0], palette='Set2')
+axs[0].set_title('A. PCA of Samples')
+axs[0].set_xlabel('PC1')
+axs[0].set_ylabel('PC2')
+axs[0].legend(title='Cluster')
+
+# PANEL B: PC1 CORRELATION BARPLOT
+pc1_corr.plot(kind='barh', ax=axs[1], color=['#e41a1c' if x > 0 else '#377eb8' for x in pc1_corr])
+axs[1].set_title('B. Correlation with PC1')
+axs[1].set_xlabel('Pearson r')
+axs[1].axvline(0, color='black', linewidth=0.8)
+
+# PANEL C: BOXPLOTS FOR SIGNIFICANT CELLS
+df_long = df_sub[significant_cells + ['cluster']].melt(id_vars='cluster', var_name='cell_type', value_name='proportion')
+sns.boxplot(data=df_long, x='cell_type', y='proportion', hue='cluster', ax=axs[2], palette='Set2')
+axs[2].set_title('C. Cell Types with Significant Differences (p < 0.05)')
+axs[2].set_xlabel('Cell Type')
+axs[2].set_ylabel('Proportion')
+axs[2].tick_params(axis='x', rotation=45)
+axs[2].legend(title='Cluster')
+
+plt.tight_layout()
+plt.show()
+
+#UMAP
+import umap
+import matplotlib.pyplot as plt
+
+# UMAP modelini tanımla
+reducer = umap.UMAP(random_state=42)
+
+# Boyut indirgeme (cluster 2 ve 3 ile çalış)
+df_sub = df_wide[df_wide['cluster'].isin([2,3])]
+cell_types = df_sub.columns.drop('cluster')
+
+# Normalize et
+from sklearn.preprocessing import StandardScaler
+scaled = StandardScaler().fit_transform(df_sub[cell_types])
+
+# UMAP sonucu
+embedding = reducer.fit_transform(scaled)
+
+# Görselleştir
+plt.figure(figsize=(6, 6))
+scatter = plt.scatter(embedding[:, 0], embedding[:, 1], c=df_sub['cluster'], cmap='Set2', s=60)
+plt.title('UMAP of Samples by Cluster')
+plt.xlabel('UMAP1')
+plt.ylabel('UMAP2')
+plt.colorbar(scatter, label='Cluster')
+plt.tight_layout()
+plt.show()
+
+#hucre tiplerine gore umap
+#t8
+plt.figure(figsize=(6,6))
+plt.scatter(embedding[:,0], embedding[:,1], c=df_sub['TCD8'], cmap='viridis', s=60)
+plt.colorbar(label='TCD8 Proportion')
+plt.title('UMAP colored by TCD8 cell proportion')
+plt.xlabel('UMAP1')
+plt.ylabel('UMAP2')
+plt.tight_layout()
+plt.show()
+
+#macro
+plt.figure(figsize=(6,6))
+plt.scatter(embedding[:,0], embedding[:,1], c=df_sub['Macro'], cmap='magma', s=60)
+plt.colorbar(label='Macro Proportion')
+plt.title('UMAP colored by Macrophage cell proportion')
+plt.xlabel('UMAP1')
+plt.ylabel('UMAP2')
+plt.tight_layout()
+plt.show()
+
+#epit
+plt.figure(figsize=(6,6))
+plt.scatter(embedding[:,0], embedding[:,1], c=df_sub['EpiT'], cmap='plasma', s=60)
+plt.colorbar(label='EpiT Proportion')
+plt.title('UMAP colored by EpiT cell proportion')
+plt.xlabel('UMAP1')
+plt.ylabel('UMAP2')
+plt.tight_layout()
+plt.show()
+from scipy.stats import ttest_ind
+
+umap1 = embedding[:, 0]
+umap2 = embedding[:, 1]
+labels = df_sub['cluster']
+
+# UMAP1 ekseni için test
+umap1_group2 = umap1[labels == 2]
+umap1_group3 = umap1[labels == 3]
+t_stat1, p_val1 = ttest_ind(umap1_group2, umap1_group3, equal_var=False)
+
+# UMAP2 ekseni için test
+umap2_group2 = umap2[labels == 2]
+umap2_group3 = umap2[labels == 3]
+t_stat2, p_val2 = ttest_ind(umap2_group2, umap2_group3, equal_var=False)
+
+# TAM p-değeri ile yazdır
+print(f"UMAP1: p = {p_val1:.20f}")
+print(f"UMAP2: p = {p_val2:.20f}")
+
+#t4
+plt.figure(figsize=(6,6))
+plt.scatter(embedding[:,0], embedding[:,1], c=df_sub['TCD4'], cmap='plasma', s=60)
+plt.colorbar(label='TCD4 (CD4⁺ T cell) Proportion')
+plt.title('UMAP colored by CD4⁺ T cell proportion')
+plt.xlabel('UMAP1')
+plt.ylabel('UMAP2')
+plt.tight_layout()
+plt.show()
+
+#mono
+plt.figure(figsize=(6,6))
+plt.scatter(embedding[:,0], embedding[:,1], c=df_sub['Mono'], cmap='plasma', s=60)
+plt.colorbar(label='Monocyte (Mono) Proportion')
+plt.title('UMAP colored by Monocyte proportion')
+plt.xlabel('UMAP1')
+plt.ylabel('UMAP2')
+plt.tight_layout()
+plt.show()
+
+#dc
+plt.figure(figsize=(6,6))
+plt.scatter(embedding[:,0], embedding[:,1], c=df_sub['DC'], cmap='plasma', s=60)
+plt.colorbar(label='Dendritic Cell (DC) Proportion')
+plt.title('UMAP colored by Dendritic Cell proportion')
+plt.xlabel('UMAP1')
+plt.ylabel('UMAP2')
+plt.tight_layout()
+plt.show()
+
+#plasma
+plt.figure(figsize=(6,6))
+plt.scatter(embedding[:,0], embedding[:,1], c=df_sub['Plasma'], cmap='plasma', s=60)
+plt.colorbar(label='Plasma Cell Proportion')
+plt.title('UMAP colored by Plasma Cell proportion')
+plt.xlabel('UMAP1')
+plt.ylabel('UMAP2')
+plt.tight_layout()
+plt.show()
+
+#endo
+plt.figure(figsize=(6,6))
+plt.scatter(embedding[:,0], embedding[:,1], c=df_sub['Endo'], cmap='plasma', s=60)
+plt.colorbar(label='Endothelial Cell (Endo) Proportion')
+plt.title('UMAP colored by Endothelial Cell proportion')
+plt.xlabel('UMAP1')
+plt.ylabel('UMAP2')
+plt.tight_layout()
+plt.show()
+
+
+#sectigim hucre gruplari anlamli olarak korele mi degil mi
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy.stats import spearmanr
+
+# 1. İlgin olan hücre tiplerini seç
+cells_of_interest = ['Macro', 'DC', 'Mono', 'TCD4', 'Endo', 'Epi', 'EpiT', 'Plasma']
+
+# 2. İlgili hücre oranlarını içeren dataframe (sadece Cluster 2 ve 3 örnekleri)
+df_corr = df_wide[df_wide['cluster'].isin([2,3])][cells_of_interest]
+
+# 3. Korelasyon matrisi hesapla (Spearman tercih edilir, çünkü non-parametrik)
+corr_matrix = df_corr.corr(method='spearman')
+
+# 4. p-değer matrisi hesaplama
+pval_matrix = pd.DataFrame(np.zeros((len(cells_of_interest), len(cells_of_interest))),
+                          columns=cells_of_interest, index=cells_of_interest)
+
+for i in range(len(cells_of_interest)):
+    for j in range(len(cells_of_interest)):
+        if i == j:
+            pval_matrix.iloc[i,j] = 0
+        else:
+            rho, pval = spearmanr(df_corr[cells_of_interest[i]], df_corr[cells_of_interest[j]])
+            pval_matrix.iloc[i,j] = pval
+
+# 5. Korelasyon matrisini görselleştir (mask ile üst üçgeni gizle)
+mask = np.triu(np.ones_like(corr_matrix, dtype=bool))
+
+plt.figure(figsize=(10,8))
+sns.heatmap(corr_matrix, annot=True, fmt=".2f", mask=mask, cmap='vlag', center=0,
+            cbar_kws={"shrink": .75}, square=True, linewidths=.5)
+
+plt.title('Spearman Correlation Matrix of Cell Type Proportions')
+plt.show()
+
+# 6. Anlamlı korelasyonları işaretlemek istersen, p < 0.05 olanları belirtebilirsin
+# Örneğin, aşağıdaki gibi:
+signif_mask = pval_matrix < 0.05
+
+plt.figure(figsize=(10,8))
+sns.heatmap(corr_matrix, annot=True, fmt=".2f", mask=mask, cmap='vlag', center=0,
+            cbar_kws={"shrink": .75}, square=True, linewidths=.5)
+
+# İşaretleme için noktalar ekleyelim
+for i in range(len(cells_of_interest)):
+    for j in range(i+1, len(cells_of_interest)):
+        if signif_mask.iloc[i,j]:
+            plt.text(j+0.5, i+0.5, '*', color='black', fontsize=20, ha='center', va='center')
+
+plt.title('Spearman Correlation Matrix with Significance (*)')
+plt.show()
+
+#liste olarak korelasyonlari alalim:
+significant_pairs = []
+
+for i in range(len(cells_of_interest)):
+    for j in range(i+1, len(cells_of_interest)):
+        cell1 = cells_of_interest[i]
+        cell2 = cells_of_interest[j]
+        corr_value = corr_matrix.iloc[i, j]
+        p_value = pval_matrix.iloc[i, j]
+        if p_value < 0.05:
+            direction = "positive" if corr_value > 0 else "negative"
+            significant_pairs.append({
+                "Cell Type 1": cell1,
+                "Cell Type 2": cell2,
+                "Correlation": corr_value,
+                "p-value": p_value,
+                "Direction": direction
+            })
+
+# DataFrame olarak göster
+significant_df = pd.DataFrame(significant_pairs)
+print(significant_df)
