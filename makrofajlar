@@ -1,0 +1,35 @@
+
+# Identify common genes between both clusters
+common_genes = set(macro_commons_expr_cluster2['genes']).intersection(set(macro_commons_expr_cluster3['genes']))
+
+# Store results
+results = []
+
+# Perform one-sided Mann-Whitney U test for each gene (Cluster 3 > Cluster 2)
+for gene in common_genes:
+    expr_cluster2 = macro_commons_expr_cluster2[macro_commons_expr_cluster2['genes'] == gene].iloc[:, 1:].values.flatten()
+    expr_cluster3 = macro_commons_expr_cluster3[macro_commons_expr_cluster3['genes'] == gene].iloc[:, 1:].values.flatten()
+
+    # One-sided test: Cluster 2 < Cluster 3
+    stat, p = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='less')
+
+    results.append({'gene': gene, 'U_statistic': stat, 'p_value': p})
+
+# Convert results to DataFrame
+results_df = pd.DataFrame(results)
+
+# Sort by raw p-value
+results_df = results_df.sort_values('p_value')
+
+# Apply FDR correction
+_, adj_pvals, _, _ = multipletests(results_df['p_value'], method='fdr_bh')
+results_df['adj_p_value'] = adj_pvals
+
+# Sort by adjusted p-value
+results_df = results_df.sort_values('adj_p_value')
+
+# Display top results
+print(results_df.head())
+
+# Export to Excel
+results_df.to_excel("mannwhitney_results_cluster3_greater.xlsx", index=False)
