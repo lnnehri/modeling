@@ -1,0 +1,1561 @@
+cluster_2_libraries = [
+    "C106_T", "C107_T", "C110_T", "C111_T", "C112_T", "C123_T", "C124_T",
+    "C125_T", "C126_T", "C132_T", "C135_T", "C136_T", "C137_T", "C138_T",
+    "C140_T", "C143_T", "C153_T", "C158_T", "C159_T", "C160_T", "C161_T",
+    "C165_T", "C167_T", "C168_T", "C169_T", "C172_T", "C173_T"
+]
+
+cluster_3_libraries = [
+    "C103_T", "C104_T", "C105_T", "C109_T", "C113_T", "C114_T", "C115_T",
+    "C116_T", "C118_T", "C119_T", "C122_T", "C129_T", "C133_T", "C134_T",
+    "C139_T", "C142_T", "C144_T", "C146_T", "C147_T", "C149_T", "C150_T",
+    "C151_T", "C152_T", "C154_T", "C155_T", "C156_T", "C163_T", "C164_T",
+    "C166_T"
+]
+
+#hucre dosyalarini iceriye cekiyorum
+import os
+import pandas as pd
+
+folder_path = "/Users/lemannur/Downloads"
+
+# Dosya isimlerini al
+files = [f for f in os.listdir(folder_path) if f.startswith("Aggregated_log2Exp_") and f.endswith(".xlsx")]
+
+# Dinamik değişkenlere atmak için dictionary kullanacağız
+dataframes = {}
+
+for file in files:
+    # Örn: Aggregated_log2Exp_Macro.xlsx -> Macro
+    key_name = file.replace("Aggregated_log2Exp_", "").replace(".xlsx", "")
+    file_path = os.path.join(folder_path, file)
+
+    # Excel dosyasını oku
+    df = pd.read_excel(file_path)
+
+    # Dict'e ata
+    dataframes[key_name] = df
+
+# Artık mesela Macro için dataframes['Macro'] ile erişebilirsin
+print("Yüklenen veri setleri:", list(dataframes.keys()))
+#uzadi almiyorum
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Macro.xlsx"
+Macro = pd.read_excel(file_path)
+
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print(Macro.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_TZBTB16.xlsx"
+var_name = "TZBTB16"
+
+TZBTB16 = pd.read_excel(file_path)
+
+print(TZBTB16.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_EpiT.xlsx"
+var_name = "EpiT"
+
+EpiT = pd.read_excel(file_path)
+
+print(EpiT.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_SmoothMu_cle.xlsx"
+var_name = "SmoothMu_cle"
+
+SmoothMu_cle = pd.read_excel(file_path)
+
+print(SmoothMu_cle.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_ILC.xlsx"
+var_name = "ILC"
+
+ILC = pd.read_excel(file_path)
+
+print(ILC.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_TCD8.xlsx"
+var_name = "TCD8"
+
+TCD8 = pd.read_excel(file_path)
+
+print(TCD8.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_NK.xlsx"
+var_name = "NK"
+
+NK = pd.read_excel(file_path)
+
+print(NK.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Endo.xlsx"
+var_name = "Endo"
+
+Endo = pd.read_excel(file_path)
+
+print(Endo.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Tgd.xlsx"
+var_name = "Tgd"
+
+Tgd = pd.read_excel(file_path)
+
+print(Tgd.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Epi.xlsx"
+var_name = "Epi"
+
+Epi = pd.read_excel(file_path)
+
+print(Epi.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_DC.xlsx"
+var_name = "DC"
+
+DC = pd.read_excel(file_path)
+
+print(DC.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_TCD4.xlsx"
+var_name = "TCD4"
+
+TCD4 = pd.read_excel(file_path)
+
+print(TCD4.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Peri.xlsx"
+var_name = "Peri"
+
+Peri = pd.read_excel(file_path)
+
+print(Peri.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Granulo.xlsx"
+var_name = "Granulo"
+
+Granulo = pd.read_excel(file_path)
+
+print(Granulo.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Schwann.xlsx"
+var_name = "Schwann"
+
+Schwann = pd.read_excel(file_path)
+
+print(Schwann.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Ma_t.xlsx"
+var_name = "Ma_t"
+
+Ma_t = pd.read_excel(file_path)
+
+print(Ma_t.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Pla_ma.xlsx"
+var_name = "Pla_ma"
+
+Pla_ma = pd.read_excel(file_path)
+
+print(Pla_ma.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Mono.xlsx"
+var_name = "Mono"
+
+Mono = pd.read_excel(file_path)
+
+print(Mono.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_Fibro.xlsx"
+var_name = "Fibro"
+
+Fibro = pd.read_excel(file_path)
+
+print(Fibro.head())
+
+import pandas as pd
+
+file_path = "/Users/lemannur/Downloads/Aggregated_log2Exp_B.xlsx"
+var_name = "B"
+
+B = pd.read_excel(file_path)
+
+print(B.head())
+
+hucre_dosyalarinin_isimleri = [
+    "Macro",
+    "TZBTB16",
+    "EpiT",
+    "SmoothMu_cle",
+    "ILC",
+    "TCD8",
+    "NK",
+    "Endo",
+    "Tgd",
+    "Epi",
+    "DC",
+    "TCD4",
+    "Peri",
+    "Granulo",
+    "Schwann",
+    "Ma_t",
+    "Pla_ma",
+    "Mono",
+    "Fibro",
+    "B"
+]
+# Hücre isimleri dataframe’de "C103-T" gibi tire ile ayrılmış,
+# o yüzden cluster listelerindeki "_" leri "-" yapıyoruz:
+def convert_names(lib_list):
+    return [lib.replace("_", "-") for lib in lib_list]
+
+cluster_2_cols = convert_names(cluster_2_libraries)
+cluster_3_cols = convert_names(cluster_3_libraries)
+
+
+# Şimdi dataframe’den bu kolonları ve genes sütununu seçiyoruz:
+cluster_2_df = Macro[["genes"] + [col for col in cluster_2_cols if col in Macro.columns]]
+cluster_3_df = Macro[["genes"] + [col for col in cluster_3_cols if col in Macro.columns]]
+
+# Dosya olarak kaydet
+cluster_2_df.to_excel("Macro_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Macro_cluster_3.xlsx", index=False)
+
+print("Macro için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+# TZBTB16 için
+cluster_2_df = TZBTB16[["genes"] + [col for col in cluster_2_cols if col in TZBTB16.columns]]
+cluster_3_df = TZBTB16[["genes"] + [col for col in cluster_3_cols if col in TZBTB16.columns]]
+
+cluster_2_df.to_excel("TZBTB16_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("TZBTB16_cluster_3.xlsx", index=False)
+
+print("TZBTB16 için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# EpiT için
+cluster_2_df = EpiT[["genes"] + [col for col in cluster_2_cols if col in EpiT.columns]]
+cluster_3_df = EpiT[["genes"] + [col for col in cluster_3_cols if col in EpiT.columns]]
+
+cluster_2_df.to_excel("EpiT_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("EpiT_cluster_3.xlsx", index=False)
+
+print("EpiT için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# SmoothMu_cle için
+cluster_2_df = SmoothMu_cle[["genes"] + [col for col in cluster_2_cols if col in SmoothMu_cle.columns]]
+cluster_3_df = SmoothMu_cle[["genes"] + [col for col in cluster_3_cols if col in SmoothMu_cle.columns]]
+
+cluster_2_df.to_excel("SmoothMu_cle_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("SmoothMu_cle_cluster_3.xlsx", index=False)
+
+print("SmoothMu_cle için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+
+# ILC için
+cluster_2_df = ILC[["genes"] + [col for col in cluster_2_cols if col in ILC.columns]]
+cluster_3_df = ILC[["genes"] + [col for col in cluster_3_cols if col in ILC.columns]]
+
+cluster_2_df.to_excel("ILC_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("ILC_cluster_3.xlsx", index=False)
+
+print("ILC için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# TCD8 için
+cluster_2_df = TCD8[["genes"] + [col for col in cluster_2_cols if col in TCD8.columns]]
+cluster_3_df = TCD8[["genes"] + [col for col in cluster_3_cols if col in TCD8.columns]]
+
+cluster_2_df.to_excel("TCD8_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("TCD8_cluster_3.xlsx", index=False)
+
+print("TCD8 için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# NK için
+cluster_2_df = NK[["genes"] + [col for col in cluster_2_cols if col in NK.columns]]
+cluster_3_df = NK[["genes"] + [col for col in cluster_3_cols if col in NK.columns]]
+
+cluster_2_df.to_excel("NK_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("NK_cluster_3.xlsx", index=False)
+
+print("NK için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# Endo için
+cluster_2_df = Endo[["genes"] + [col for col in cluster_2_cols if col in Endo.columns]]
+cluster_3_df = Endo[["genes"] + [col for col in cluster_3_cols if col in Endo.columns]]
+
+cluster_2_df.to_excel("Endo_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Endo_cluster_3.xlsx", index=False)
+
+print("Endo için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+#####run et:
+
+
+# Tgd için
+cluster_2_df = Tgd[["genes"] + [col for col in cluster_2_cols if col in Tgd.columns]]
+cluster_3_df = Tgd[["genes"] + [col for col in cluster_3_cols if col in Tgd.columns]]
+
+cluster_2_df.to_excel("Tgd_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Tgd_cluster_3.xlsx", index=False)
+
+print("Tgd için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# Epi için
+cluster_2_df = Epi[["genes"] + [col for col in cluster_2_cols if col in Epi.columns]]
+cluster_3_df = Epi[["genes"] + [col for col in cluster_3_cols if col in Epi.columns]]
+
+cluster_2_df.to_excel("Epi_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Epi_cluster_3.xlsx", index=False)
+
+print("Epi için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# DC için
+cluster_2_df = DC[["genes"] + [col for col in cluster_2_cols if col in DC.columns]]
+cluster_3_df = DC[["genes"] + [col for col in cluster_3_cols if col in DC.columns]]
+
+cluster_2_df.to_excel("DC_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("DC_cluster_3.xlsx", index=False)
+
+print("DC için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# TCD4 için
+cluster_2_df = TCD4[["genes"] + [col for col in cluster_2_cols if col in TCD4.columns]]
+cluster_3_df = TCD4[["genes"] + [col for col in cluster_3_cols if col in TCD4.columns]]
+
+cluster_2_df.to_excel("TCD4_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("TCD4_cluster_3.xlsx", index=False)
+
+print("TCD4 için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+#######run eT:
+# Peri için
+cluster_2_df = Peri[["genes"] + [col for col in cluster_2_cols if col in Peri.columns]]
+cluster_3_df = Peri[["genes"] + [col for col in cluster_3_cols if col in Peri.columns]]
+
+cluster_2_df.to_excel("Peri_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Peri_cluster_3.xlsx", index=False)
+
+print("Peri için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# Granulo için
+cluster_2_df = Granulo[["genes"] + [col for col in cluster_2_cols if col in Granulo.columns]]
+cluster_3_df = Granulo[["genes"] + [col for col in cluster_3_cols if col in Granulo.columns]]
+
+cluster_2_df.to_excel("Granulo_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Granulo_cluster_3.xlsx", index=False)
+
+print("Granulo için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# Schwann için
+cluster_2_df = Schwann[["genes"] + [col for col in cluster_2_cols if col in Schwann.columns]]
+cluster_3_df = Schwann[["genes"] + [col for col in cluster_3_cols if col in Schwann.columns]]
+
+cluster_2_df.to_excel("Schwann_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Schwann_cluster_3.xlsx", index=False)
+
+print("Schwann için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# Ma_t için
+cluster_2_df = Ma_t[["genes"] + [col for col in cluster_2_cols if col in Ma_t.columns]]
+cluster_3_df = Ma_t[["genes"] + [col for col in cluster_3_cols if col in Ma_t.columns]]
+
+cluster_2_df.to_excel("Ma_t_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Ma_t_cluster_3.xlsx", index=False)
+
+print("Ma_t için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# Pla_ma için
+cluster_2_df = Pla_ma[["genes"] + [col for col in cluster_2_cols if col in Pla_ma.columns]]
+cluster_3_df = Pla_ma[["genes"] + [col for col in cluster_3_cols if col in Pla_ma.columns]]
+
+cluster_2_df.to_excel("Pla_ma_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Pla_ma_cluster_3.xlsx", index=False)
+
+print("Pla_ma için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# Mono için
+cluster_2_df = Mono[["genes"] + [col for col in cluster_2_cols if col in Mono.columns]]
+cluster_3_df = Mono[["genes"] + [col for col in cluster_3_cols if col in Mono.columns]]
+
+cluster_2_df.to_excel("Mono_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Mono_cluster_3.xlsx", index=False)
+
+print("Mono için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# Fibro için
+cluster_2_df = Fibro[["genes"] + [col for col in cluster_2_cols if col in Fibro.columns]]
+cluster_3_df = Fibro[["genes"] + [col for col in cluster_3_cols if col in Fibro.columns]]
+
+cluster_2_df.to_excel("Fibro_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("Fibro_cluster_3.xlsx", index=False)
+
+print("Fibro için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+
+# B için
+cluster_2_df = B[["genes"] + [col for col in cluster_2_cols if col in B.columns]]
+cluster_3_df = B[["genes"] + [col for col in cluster_3_cols if col in B.columns]]
+
+cluster_2_df.to_excel("B_cluster_2.xlsx", index=False)
+cluster_3_df.to_excel("B_cluster_3.xlsx", index=False)
+
+print("B için cluster 2 ve cluster 3 dosyaları başarıyla kaydedildi.")
+
+import os
+
+folder_path = "/Users/lemannur/Downloads"  # indirilenler klasörünün tam yolu
+
+# İsminde '_cluster_' geçen tüm dosyaların tam yollarını al
+cluster_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if "_cluster_" in f]
+
+# Dosya yollarını yazdır
+for path in cluster_files:
+    print(path)
+
+
+import pandas as pd
+import os
+
+# Dosya yolları
+file_paths = [
+    "/Users/lemannur/Downloads/Macro_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Epi_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/TCD8_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/TCD8_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Epi_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Macro_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/SmoothMu_cle_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Schwann_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/TCD4_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/NK_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Granulo_cluster_3.xlsx",
+    # "~$Tgd_cluster_3.xlsx" geçici Office dosyası, atlıyorum
+    "/Users/lemannur/Downloads/B_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/B_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Granulo_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/NK_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/TCD4_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/SmoothMu_cle_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/Schwann_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Peri_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Ma_t_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/DC_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/Endo_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/DC_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Endo_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Peri_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/Ma_t_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/Tgd_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/EpiT_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/ILC_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/Pla_ma_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/TZBTB16_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Fibro_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/Mono_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Mono_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/Fibro_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/TZBTB16_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/ILC_cluster_3.xlsx",
+    "/Users/lemannur/Downloads/Pla_ma_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/EpiT_cluster_2.xlsx",
+    "/Users/lemannur/Downloads/Tgd_cluster_3.xlsx"
+]
+
+# Dosyaları değişken olarak yükleyecek dictionary
+dataframes = {}
+
+for path in file_paths:
+    # Office geçici dosyasını atla
+    if os.path.basename(path).startswith("~$"):
+        continue
+
+    # Dosya isminden değişken adı çıkar: örn. "Macro_cluster_3.xlsx" -> "Macro_cluster_3"
+    var_name = os.path.splitext(os.path.basename(path))[0]
+
+    # Excel dosyasını oku
+    df = pd.read_excel(path)
+
+    # Değişken adıyla dictionary'ye kaydet
+    dataframes[var_name] = df
+
+    print(f"{var_name} yüklendi, shape: {df.shape}")
+
+# Örnek erişim: dataframes["Macro_cluster_3"]
+
+
+#########################
+###ortak genleri bulmaya calisiyorum simdi
+
+import pandas as pd
+
+# Macro_cluster_3 dataframe
+df = dataframes["Macro_cluster_3"]
+
+# 'genes' sütunu dışındaki expression sütunlarını seç
+expr_cols = [col for col in df.columns if col != "genes"]
+
+# Tüm expression sütunlarında değeri 0'dan farklı olan genleri filtrele
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+
+# İstatistikleri hesapla
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+
+# Sonuçları ayrı bir DataFrame olarak tut
+Macro_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+
+print(Macro_cluster_3_stats.head())
+
+# Excel olarak kaydet
+output_path = "/Users/lemannur/Downloads/Macro_cluster_3_stats.xlsx"
+Macro_cluster_3_stats.to_excel(output_path, index=False)
+print(f"İstatistikler '{output_path}' dosyasına kaydedildi.")
+
+import pandas as pd
+
+# Epi_cluster_2 dataframe
+df = dataframes["Epi_cluster_2"]
+
+# 'genes' sütunu dışındaki expression sütunlarını seç
+expr_cols = [col for col in df.columns if col != "genes"]
+
+# Tüm expression sütunlarında değeri 0'dan farklı olan genleri filtrele
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+
+# İstatistikleri hesapla
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+
+# Sonuçları ayrı bir DataFrame olarak tut
+Epi_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+
+print(Epi_cluster_2_stats.head())
+
+# Dosyaya kaydet
+Epi_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Epi_cluster_2_stats.xlsx", index=False)
+
+import pandas as pd
+
+# TCD8_cluster_2
+df = dataframes["TCD8_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+TCD8_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(TCD8_cluster_2_stats.head())
+TCD8_cluster_2_stats.to_excel("/Users/lemannur/Downloads/TCD8_cluster_2_stats.xlsx", index=False)
+
+# TCD8_cluster_3
+df = dataframes["TCD8_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+TCD8_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(TCD8_cluster_3_stats.head())
+TCD8_cluster_3_stats.to_excel("/Users/lemannur/Downloads/TCD8_cluster_3_stats.xlsx", index=False)
+
+# Epi_cluster_3
+df = dataframes["Epi_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Epi_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Epi_cluster_3_stats.head())
+Epi_cluster_3_stats.to_excel("/Users/lemannur/Downloads/Epi_cluster_3_stats.xlsx", index=False)
+
+# Macro_cluster_2
+df = dataframes["Macro_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Macro_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Macro_cluster_2_stats.head())
+Macro_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Macro_cluster_2_stats.xlsx", index=False)
+
+import pandas as pd
+
+# SmoothMu_cle_cluster_3
+df = dataframes["SmoothMu_cle_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+SmoothMu_cle_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(SmoothMu_cle_cluster_3_stats.head())
+SmoothMu_cle_cluster_3_stats.to_excel("/Users/lemannur/Downloads/SmoothMu_cle_cluster_3_stats.xlsx", index=False)
+
+# Schwann_cluster_2
+df = dataframes["Schwann_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Schwann_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Schwann_cluster_2_stats.head())
+Schwann_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Schwann_cluster_2_stats.xlsx", index=False)
+
+# TCD4_cluster_2
+df = dataframes["TCD4_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+TCD4_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(TCD4_cluster_2_stats.head())
+TCD4_cluster_2_stats.to_excel("/Users/lemannur/Downloads/TCD4_cluster_2_stats.xlsx", index=False)
+
+# NK_cluster_3
+df = dataframes["NK_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+NK_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(NK_cluster_3_stats.head())
+NK_cluster_3_stats.to_excel("/Users/lemannur/Downloads/NK_cluster_3_stats.xlsx", index=False)
+
+# Granulo_cluster_3
+df = dataframes["Granulo_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Granulo_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Granulo_cluster_3_stats.head())
+Granulo_cluster_3_stats.to_excel("/Users/lemannur/Downloads/Granulo_cluster_3_stats.xlsx", index=False)
+
+
+import pandas as pd
+
+# B_cluster_2
+df = dataframes["B_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+B_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(B_cluster_2_stats.head())
+B_cluster_2_stats.to_excel("/Users/lemannur/Downloads/B_cluster_2_stats.xlsx", index=False)
+
+# B_cluster_3
+df = dataframes["B_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+B_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(B_cluster_3_stats.head())
+B_cluster_3_stats.to_excel("/Users/lemannur/Downloads/B_cluster_3_stats.xlsx", index=False)
+
+# Granulo_cluster_2
+df = dataframes["Granulo_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Granulo_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Granulo_cluster_2_stats.head())
+Granulo_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Granulo_cluster_2_stats.xlsx", index=False)
+
+# NK_cluster_2
+df = dataframes["NK_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+NK_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(NK_cluster_2_stats.head())
+NK_cluster_2_stats.to_excel("/Users/lemannur/Downloads/NK_cluster_2_stats.xlsx", index=False)
+
+# TCD4_cluster_3
+df = dataframes["TCD4_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+TCD4_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(TCD4_cluster_3_stats.head())
+TCD4_cluster_3_stats.to_excel("/Users/lemannur/Downloads/TCD4_cluster_3_stats.xlsx", index=False)
+
+# SmoothMu_cle_cluster_2
+df = dataframes["SmoothMu_cle_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+SmoothMu_cle_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(SmoothMu_cle_cluster_2_stats.head())
+SmoothMu_cle_cluster_2_stats.to_excel("/Users/lemannur/Downloads/SmoothMu_cle_cluster_2_stats.xlsx", index=False)
+
+import pandas as pd
+
+# Schwann_cluster_3
+df = dataframes["Schwann_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Schwann_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Schwann_cluster_3_stats.head())
+Schwann_cluster_3_stats.to_excel("/Users/lemannur/Downloads/Schwann_cluster_3_stats.xlsx", index=False)
+
+# Peri_cluster_3
+df = dataframes["Peri_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Peri_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Peri_cluster_3_stats.head())
+Peri_cluster_3_stats.to_excel("/Users/lemannur/Downloads/Peri_cluster_3_stats.xlsx", index=False)
+
+# Ma_t_cluster_3
+df = dataframes["Ma_t_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Ma_t_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Ma_t_cluster_3_stats.head())
+Ma_t_cluster_3_stats.to_excel("/Users/lemannur/Downloads/Ma_t_cluster_3_stats.xlsx", index=False)
+
+# DC_cluster_2
+df = dataframes["DC_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+DC_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(DC_cluster_2_stats.head())
+DC_cluster_2_stats.to_excel("/Users/lemannur/Downloads/DC_cluster_2_stats.xlsx", index=False)
+
+# Endo_cluster_2
+df = dataframes["Endo_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Endo_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Endo_cluster_2_stats.head())
+Endo_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Endo_cluster_2_stats.xlsx", index=False)
+
+# DC_cluster_3
+df = dataframes["DC_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+DC_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(DC_cluster_3_stats.head())
+DC_cluster_3_stats.to_excel("/Users/lemannur/Downloads/DC_cluster_3_stats.xlsx", index=False)
+
+# Endo_cluster_3
+df = dataframes["Endo_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Endo_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Endo_cluster_3_stats.head())
+Endo_cluster_3_stats.to_excel("/Users/lemannur/Downloads/Endo_cluster_3_stats.xlsx", index=False)
+
+# Peri_cluster_2
+df = dataframes["Peri_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Peri_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Peri_cluster_2_stats.head())
+Peri_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Peri_cluster_2_stats.xlsx", index=False)
+
+import pandas as pd
+
+# Ma_t_cluster_2
+df = dataframes["Ma_t_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Ma_t_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Ma_t_cluster_2_stats.head())
+Ma_t_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Ma_t_cluster_2_stats.xlsx", index=False)
+
+# Tgd_cluster_2
+df = dataframes["Tgd_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Tgd_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Tgd_cluster_2_stats.head())
+Tgd_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Tgd_cluster_2_stats.xlsx", index=False)
+
+# EpiT_cluster_3
+df = dataframes["EpiT_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+EpiT_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(EpiT_cluster_3_stats.head())
+EpiT_cluster_3_stats.to_excel("/Users/lemannur/Downloads/EpiT_cluster_3_stats.xlsx", index=False)
+
+# ILC_cluster_2
+df = dataframes["ILC_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+ILC_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(ILC_cluster_2_stats.head())
+ILC_cluster_2_stats.to_excel("/Users/lemannur/Downloads/ILC_cluster_2_stats.xlsx", index=False)
+
+# Pla_ma_cluster_3
+df = dataframes["Pla_ma_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Pla_ma_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Pla_ma_cluster_3_stats.head())
+Pla_ma_cluster_3_stats.to_excel("/Users/lemannur/Downloads/Pla_ma_cluster_3_stats.xlsx", index=False)
+
+# TZBTB16_cluster_3
+df = dataframes["TZBTB16_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+TZBTB16_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(TZBTB16_cluster_3_stats.head())
+TZBTB16_cluster_3_stats.to_excel("/Users/lemannur/Downloads/TZBTB16_cluster_3_stats.xlsx", index=False)
+
+import pandas as pd
+
+# Fibro_cluster_2
+df = dataframes["Fibro_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Fibro_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Fibro_cluster_2_stats.head())
+Fibro_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Fibro_cluster_2_stats.xlsx", index=False)
+
+
+# Mono_cluster_3
+df = dataframes["Mono_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Mono_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Mono_cluster_3_stats.head())
+Mono_cluster_3_stats.to_excel("/Users/lemannur/Downloads/Mono_cluster_3_stats.xlsx", index=False)
+
+
+# Mono_cluster_2
+df = dataframes["Mono_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Mono_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Mono_cluster_2_stats.head())
+Mono_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Mono_cluster_2_stats.xlsx", index=False)
+
+
+# Fibro_cluster_3
+df = dataframes["Fibro_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Fibro_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Fibro_cluster_3_stats.head())
+Fibro_cluster_3_stats.to_excel("/Users/lemannur/Downloads/Fibro_cluster_3_stats.xlsx", index=False)
+
+
+# TZBTB16_cluster_2
+df = dataframes["TZBTB16_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+TZBTB16_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(TZBTB16_cluster_2_stats.head())
+TZBTB16_cluster_2_stats.to_excel("/Users/lemannur/Downloads/TZBTB16_cluster_2_stats.xlsx", index=False)
+
+
+# ILC_cluster_3
+df = dataframes["ILC_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+ILC_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(ILC_cluster_3_stats.head())
+ILC_cluster_3_stats.to_excel("/Users/lemannur/Downloads/ILC_cluster_3_stats.xlsx", index=False)
+
+
+# Pla_ma_cluster_2
+df = dataframes["Pla_ma_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Pla_ma_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Pla_ma_cluster_2_stats.head())
+Pla_ma_cluster_2_stats.to_excel("/Users/lemannur/Downloads/Pla_ma_cluster_2_stats.xlsx", index=False)
+
+
+# EpiT_cluster_2
+df = dataframes["EpiT_cluster_2"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+EpiT_cluster_2_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(EpiT_cluster_2_stats.head())
+EpiT_cluster_2_stats.to_excel("/Users/lemannur/Downloads/EpiT_cluster_2_stats.xlsx", index=False)
+
+
+# Tgd_cluster_3
+df = dataframes["Tgd_cluster_3"]
+expr_cols = [col for col in df.columns if col != "genes"]
+filtered_df = df[df[expr_cols].gt(0).all(axis=1)].copy()
+filtered_df['mean_expression'] = filtered_df[expr_cols].mean(axis=1)
+filtered_df['std_expression'] = filtered_df[expr_cols].std(axis=1)
+filtered_df['var_expression'] = filtered_df[expr_cols].var(axis=1)
+filtered_df['median_expression'] = filtered_df[expr_cols].median(axis=1)
+Tgd_cluster_3_stats = filtered_df[['genes', 'mean_expression', 'std_expression', 'var_expression', 'median_expression']]
+print(Tgd_cluster_3_stats.head())
+Tgd_cluster_3_stats.to_excel("/Users/lemannur/Downloads/Tgd_cluster_3_stats.xlsx", index=False)
+
+
+import os
+
+folder_path = "/Users/lemannur/Desktop/clusters' gene statistics for each cell type"
+
+files = os.listdir(folder_path)
+
+print(files)
+
+
+cluster_stat_files = [
+    'Fibro_cluster_2_stats',
+    'TCD4_cluster_3_stats',
+    'B_cluster_3_stats',
+    'TZBTB16_cluster_2_stats',
+    'EpiT_cluster_3_stats',
+    'Peri_cluster_3_stats',
+    'Macro_cluster_3_stats',
+    'Tgd_cluster_3_stats',
+    'NK_cluster_2_stats',
+    'Ma_t_cluster_3_stats',
+    'TCD8_cluster_2_stats',
+    'Epi_cluster_3_stats',
+    'ILC_cluster_2_stats',
+    'Granulo_cluster_2_stats',
+    'Endo_cluster_3_stats',
+    'SmoothMu_cle_cluster_2_stats',
+    'DC_cluster_3_stats',
+    'Pla_ma_cluster_2_stats',
+    'Mono_cluster_3_stats',
+    'Schwann_cluster_2_stats',
+    'TCD4_cluster_2_stats',
+    'B_cluster_2_stats',
+    'EpiT_cluster_2_stats',
+    'TZBTB16_cluster_3_stats',
+    'Macro_cluster_2_stats',
+    'Peri_cluster_2_stats',
+    'Fibro_cluster_3_stats',
+    'TCD8_cluster_3_stats',
+    'Granulo_cluster_3_stats',
+    'Endo_cluster_2_stats',
+    'Epi_cluster_2_stats',
+    'ILC_cluster_3_stats',
+    'Pla_ma_cluster_3_stats',
+    'SmoothMu_cle_cluster_3_stats',
+    'DC_cluster_2_stats',
+    'Schwann_cluster_3_stats',
+    'Mono_cluster_2_stats',
+    'Tgd_cluster_2_stats',
+    'NK_cluster_3_stats',
+    'Ma_t_cluster_2_stats'
+]
+
+# Önceden cluster_stat_files listesinin tanımlı olduğunu varsayıyorum
+
+filtered_dfs = {}
+
+for df_name in cluster_stat_files:
+    # DataFrame adını ortamdan çek
+    df = globals().get(df_name)
+    if df is None:
+        print(f"{df_name} bulunamadı, atlandı.")
+        continue
+
+    # std_expression ve var_expression 1'in altında olan genleri seç
+    filtered_df = df[(df['std_expression'] < 1) & (df['var_expression'] < 1)].copy()
+
+    # mean_expression'a göre azalan sırala
+    filtered_df = filtered_df.sort_values(by='mean_expression', ascending=False).reset_index(drop=True)
+
+    # Yeni dict'e kaydet
+    filtered_name = f"filtered_{df_name}"
+    filtered_dfs[filtered_name] = filtered_df
+
+    print(f"{df_name} için {len(filtered_df)} gen seçildi ve {filtered_name} olarak kaydedildi.")
+
+import os
+
+output_folder = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered"
+os.makedirs(output_folder, exist_ok=True)  # Klasör yoksa oluştur
+
+for filtered_name, filtered_df in filtered_dfs.items():
+    # Dosya adı (örn: filtered_Fibro_cluster_2_stats.xlsx)
+    file_name = f"{filtered_name}.xlsx"
+    file_path = os.path.join(output_folder, file_name)
+
+    # Excel'e kaydet
+    filtered_df.to_excel(file_path, index=False)
+
+    print(f"{file_name} başarıyla kaydedildi.")
+
+#import pandas as pd
+
+# Raw data: isimler ve sayıların olduğu liste
+raw_data = """
+Fibro_cluster_2_stats 757
+TCD4_cluster_3_stats 4314
+B_cluster_3_stats 989
+TZBTB16_cluster_2_stats 1051
+EpiT_cluster_3_stats 13671
+Peri_cluster_3_stats 308
+Macro_cluster_3_stats 4354
+Tgd_cluster_3_stats 613
+NK_cluster_2_stats 1629
+Ma_t_cluster_3_stats 595
+TCD8_cluster_2_stats 3783
+Epi_cluster_3_stats 934
+ILC_cluster_2_stats 171
+Granulo_cluster_2_stats 117
+Endo_cluster_3_stats 2633
+SmoothMu_cle_cluster_2_stats 210
+DC_cluster_3_stats 1183
+Pla_ma_cluster_2_stats 565
+Mono_cluster_3_stats 3488
+Schwann_cluster_2_stats 224
+TCD4_cluster_2_stats 8406
+B_cluster_2_stats 1383
+EpiT_cluster_2_stats 13161
+TZBTB16_cluster_3_stats 512
+Macro_cluster_2_stats 8880
+Peri_cluster_2_stats 228
+Fibro_cluster_3_stats 853
+TCD8_cluster_3_stats 3805
+Granulo_cluster_3_stats 55
+Endo_cluster_2_stats 715
+Epi_cluster_2_stats 133
+ILC_cluster_3_stats 245
+Pla_ma_cluster_3_stats 397
+SmoothMu_cle_cluster_3_stats 153
+DC_cluster_2_stats 6453
+Schwann_cluster_3_stats 114
+Mono_cluster_2_stats 6906
+Tgd_cluster_2_stats 764
+NK_cluster_3_stats 885
+Ma_t_cluster_2_stats 787
+"""
+
+# Veriyi işleme
+lines = raw_data.strip().split('\n')
+data = []
+for line in lines:
+    parts = line.split()
+    name = parts[0]  # örn: Fibro_cluster_2_stats
+    count = int(parts[1])
+    # cell_type, cluster çıkar
+    cell_type = name.split('_cluster_')[0]
+    cluster = name.split('_cluster_')[1].replace('_stats', '')
+    data.append([cell_type, cluster, count])
+
+# DataFrame oluştur
+df = pd.DataFrame(data, columns=['cell_type', 'cluster', 'expressed_genes_count'])
+
+# Kaydet
+output_path = "/Users/lemannur/Desktop/clusters_gene_expression_summary.xlsx"
+df.to_excel(output_path, index=False)
+
+print(f"Veri başarıyla kaydedildi: {output_path}")
+print(df.head())
+
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Dosyayı yükle
+df = pd.read_excel("/Users/lemannur/Desktop/clusters_gene_expression_summary.xlsx")
+
+plt.figure(figsize=(14,7))
+
+# Bar plot
+sns.barplot(data=df, x='cell_type', y='expressed_genes_count', hue='cluster')
+
+plt.xticks(rotation=45, ha='right')
+plt.xlabel("Cell Type")
+plt.ylabel("Number of Expressed Genes")
+plt.title("Expressed Genes Count by Cell Type and Cluster")
+plt.tight_layout()
+
+plt.show()
+
+
+# filtered_dfs sözlüğü var, anahtarlar şöyle: 'filtered_Fibro_cluster_2_stats', 'filtered_Fibro_cluster_3_stats', ...
+
+# Hücre isimlerini bulmak için:
+cell_types = set()
+for key in filtered_dfs.keys():
+    # Anahtar formatı: filtered_<CellType>_cluster_<2 veya 3>_stats
+    parts = key.split('_')
+    # Örnek: ['filtered', 'Fibro', 'cluster', '2', 'stats']
+    cell_type = parts[1]  # Fibro gibi
+    cell_types.add(cell_type)
+
+results = {}
+
+for cell in cell_types:
+    cluster_2_key = f"filtered_{cell}_cluster_2_stats"
+    cluster_3_key = f"filtered_{cell}_cluster_3_stats"
+    if cluster_2_key in filtered_dfs and cluster_3_key in filtered_dfs:
+        df2 = filtered_dfs[cluster_2_key]
+        df3 = filtered_dfs[cluster_3_key]
+
+        genes_2 = set(df2['genes'])
+        genes_3 = set(df3['genes'])
+
+        common_genes = genes_2.intersection(genes_3)
+        only_2 = genes_2 - genes_3
+        only_3 = genes_3 - genes_2
+
+        results[cell] = {
+            'common_count': len(common_genes),
+            'only_cluster_2_count': len(only_2),
+            'only_cluster_3_count': len(only_3),
+            'common_genes': sorted(common_genes),
+            'only_cluster_2_genes': sorted(only_2),
+            'only_cluster_3_genes': sorted(only_3),
+        }
+
+# Örnek çıktı göster:
+for cell, res in results.items():
+    print(f"Cell type: {cell}")
+    print(f"Common genes: {res['common_count']}")
+    print(f"Only in cluster 2: {res['only_cluster_2_count']}")
+    print(f"Only in cluster 3: {res['only_cluster_3_count']}")
+    print("---")
+
+# İstersen results sözlüğünü daha sonra detaylı incelemek için kullanabilirsin.
+
+import pandas as pd
+
+for cell, res in results.items():
+    # Ortak genler dataframe'i
+    df_common = pd.DataFrame({
+        'Category': 'Common',
+        'Gene': res['common_genes']
+    })
+
+    # Sadece cluster 2'de olanlar
+    df_only_2 = pd.DataFrame({
+        'Category': 'Only_Cluster_2',
+        'Gene': res['only_cluster_2_genes']
+    })
+
+    # Sadece cluster 3'te olanlar
+    df_only_3 = pd.DataFrame({
+        'Category': 'Only_Cluster_3',
+        'Gene': res['only_cluster_3_genes']
+    })
+
+    # Hepsini birleştir
+    df_all = pd.concat([df_common, df_only_2, df_only_3], ignore_index=True)
+
+    # Dosya adı, örn: Fibro_gene_comparison.xlsx
+    output_path = f"/Users/lemannur/Desktop/clusters_gene_expression_summary/{cell}_gene_comparison.xlsx"
+
+    # Kaydet
+    df_all.to_excel(output_path, index=False)
+
+    print(f"{cell} için karşılaştırma dosyası kaydedildi: {output_path}")
+
+import os
+import pandas as pd
+
+output_folder = "/Users/lemannur/Desktop/clusters_gene_expression_summary"
+
+# Klasör yoksa oluştur
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+
+for cell, res in results.items():
+    df_common = pd.DataFrame({
+        'Category': 'Common',
+        'Gene': res['common_genes']
+    })
+
+    df_only_2 = pd.DataFrame({
+        'Category': 'Only_Cluster_2',
+        'Gene': res['only_cluster_2_genes']
+    })
+
+    df_only_3 = pd.DataFrame({
+        'Category': 'Only_Cluster_3',
+        'Gene': res['only_cluster_3_genes']
+    })
+
+    df_all = pd.concat([df_common, df_only_2, df_only_3], ignore_index=True)
+
+    output_path = os.path.join(output_folder, f"{cell}_gene_comparison.xlsx")
+
+    df_all.to_excel(output_path, index=False)
+
+    print(f"{cell} için karşılaştırma dosyası kaydedildi: {output_path}")
+
+    # Örnek filtered DataFrame oluşturma
+    filtered_Pla_ma_cluster_2_stats = Pla_ma_cluster_2_stats[
+        (Pla_ma_cluster_2_stats['std_expression'] < 1) &
+        (Pla_ma_cluster_2_stats['var_expression'] < 1)
+        ].copy()
+    filtered_Pla_ma_cluster_2_stats.sort_values('mean_expression', ascending=False, inplace=True)
+filtered_Pla_ma_cluster_3_stats = Pla_ma_cluster_3_stats[
+    (Pla_ma_cluster_3_stats['std_expression'] < 1) &
+    (Pla_ma_cluster_3_stats['var_expression'] < 1)
+].copy()
+
+filtered_Pla_ma_cluster_3_stats.sort_values('mean_expression', ascending=False, inplace=True)
+# Öncelikle filtrelenmiş DataFrame'lerin olduğunu varsayıyorum:
+# filtered_Pla_ma_cluster_2_stats ve filtered_Pla_ma_cluster_3_stats
+
+# Gen isimlerini set olarak al
+genes_2 = set(filtered_Pla_ma_cluster_2_stats['genes'])
+genes_3 = set(filtered_Pla_ma_cluster_3_stats['genes'])
+
+# Ortak genler
+common_genes = genes_2.intersection(genes_3)
+
+# Sadece cluster 2'de olan genler
+only_2_genes = genes_2 - genes_3
+
+# Sadece cluster 3'te olan genler
+only_3_genes = genes_3 - genes_2
+
+# Ortak genleri içeren DataFrame
+common_df = pd.DataFrame({
+    'genes': sorted(common_genes),
+    'category': 'common'
+})
+
+# Sadece cluster 2'de olan genler DataFrame'i
+only_2_df = pd.DataFrame({
+    'genes': sorted(only_2_genes),
+    'category': 'only_cluster_2'
+})
+
+# Sadece cluster 3'te olan genler DataFrame'i
+only_3_df = pd.DataFrame({
+    'genes': sorted(only_3_genes),
+    'category': 'only_cluster_3'
+})
+
+# Tümünü birleştir
+combined_df = pd.concat([common_df, only_2_df, only_3_df], ignore_index=True)
+
+# Örnek olarak gen sayıları ve ilk 5 satırını yazdır
+print(f"Ortak gen sayısı: {len(common_genes)}")
+print(f"Sadece cluster 2'de olan gen sayısı: {len(only_2_genes)}")
+print(f"Sadece cluster 3'te olan gen sayısı: {len(only_3_genes)}")
+
+print(combined_df.head())
+
+# İstersen Excel dosyası olarak kaydet
+output_path = "/Users/lemannur/Desktop/Pla_ma_gene_comparison.xlsx"
+combined_df.to_excel(output_path, index=False)
+print(f"Sonuçlar {output_path} dosyasına kaydedildi.")
+
+# SmoothMu_cle için
+genes_2 = set(filtered_SmoothMu_cle_cluster_2_stats['genes'])
+genes_3 = set(filtered_SmoothMu_cle_cluster_3_stats['genes'])
+
+common_genes = genes_2.intersection(genes_3)
+only_2_genes = genes_2 - genes_3
+only_3_genes = genes_3 - genes_2
+
+common_df = pd.DataFrame({'genes': sorted(common_genes), 'category': 'common'})
+only_2_df = pd.DataFrame({'genes': sorted(only_2_genes), 'category': 'only_cluster_2'})
+only_3_df = pd.DataFrame({'genes': sorted(only_3_genes), 'category': 'only_cluster_3'})
+
+combined_df = pd.concat([common_df, only_2_df, only_3_df], ignore_index=True)
+
+print(f"SmoothMu_cle - Ortak gen sayısı: {len(common_genes)}")
+print(f"SmoothMu_cle - Sadece cluster 2 gen sayısı: {len(only_2_genes)}")
+print(f"SmoothMu_cle - Sadece cluster 3 gen sayısı: {len(only_3_genes)}")
+
+output_path = "/Users/lemannur/Desktop/SmoothMu_cle_gene_comparison.xlsx"
+combined_df.to_excel(output_path, index=False)
+print(f"SmoothMu_cle sonuçları {output_path} dosyasına kaydedildi.")
+
+
+# Ma_t için
+genes_2 = set(filtered_Ma_t_cluster_2_stats['genes'])
+genes_3 = set(filtered_Ma_t_cluster_3_stats['genes'])
+
+common_genes = genes_2.intersection(genes_3)
+only_2_genes = genes_2 - genes_3
+only_3_genes = genes_3 - genes_2
+
+common_df = pd.DataFrame({'genes': sorted(common_genes), 'category': 'common'})
+only_2_df = pd.DataFrame({'genes': sorted(only_2_genes), 'category': 'only_cluster_2'})
+only_3_df = pd.DataFrame({'genes': sorted(only_3_genes), 'category': 'only_cluster_3'})
+
+combined_df = pd.concat([common_df, only_2_df, only_3_df], ignore_index=True)
+
+print(f"Ma_t - Ortak gen sayısı: {len(common_genes)}")
+print(f"Ma_t - Sadece cluster 2 gen sayısı: {len(only_2_genes)}")
+print(f"Ma_t - Sadece cluster 3 gen sayısı: {len(only_3_genes)}")
+
+output_path = "/Users/lemannur/Desktop/Ma_t_gene_comparison.xlsx"
+combined_df.to_excel(output_path, index=False)
+print(f"Ma_t sonuçları {output_path} dosyasına kaydedildi.")
+
+
+# SmoothMu_cle cluster 2 için filtreleme
+filtered_SmoothMu_cle_cluster_2_stats = SmoothMu_cle_cluster_2_stats[
+    (SmoothMu_cle_cluster_2_stats['std_expression'] < 1) &
+    (SmoothMu_cle_cluster_2_stats['var_expression'] < 1)
+].copy()
+
+print(f"SmoothMu_cle cluster 2 filtered gen sayısı: {filtered_SmoothMu_cle_cluster_2_stats.shape[0]}")
+
+# SmoothMu_cle cluster 3 için filtreleme
+filtered_SmoothMu_cle_cluster_3_stats = SmoothMu_cle_cluster_3_stats[
+    (SmoothMu_cle_cluster_3_stats['std_expression'] < 1) &
+    (SmoothMu_cle_cluster_3_stats['var_expression'] < 1)
+].copy()
+
+print(f"SmoothMu_cle cluster 3 filtered gen sayısı: {filtered_SmoothMu_cle_cluster_3_stats.shape[0]}")
+filtered_SmoothMu_cle_cluster_2_stats.to_excel("/Users/lemannur/Desktop/filtered_SmoothMu_cle_cluster_2_stats.xlsx", index=False)
+filtered_SmoothMu_cle_cluster_3_stats.to_excel("/Users/lemannur/Desktop/filtered_SmoothMu_cle_cluster_3_stats.xlsx", index=False)
+
+# SmoothMu_cle için
+genes_2 = set(SmoothMu_cle_cluster_2_stats['genes'])
+genes_3 = set(SmoothMu_cle_cluster_3_stats['genes'])
+
+common_genes = genes_2.intersection(genes_3)
+only_2_genes = genes_2 - genes_3
+only_3_genes = genes_3 - genes_2
+
+common_df = pd.DataFrame({'genes': sorted(common_genes), 'category': 'common'})
+only_2_df = pd.DataFrame({'genes': sorted(only_2_genes), 'category': 'only_cluster_2'})
+only_3_df = pd.DataFrame({'genes': sorted(only_3_genes), 'category': 'only_cluster_3'})
+
+combined_df = pd.concat([common_df, only_2_df, only_3_df], ignore_index=True)
+
+print(f"SmoothMu_cle - Ortak gen sayısı: {len(common_genes)}")
+print(f"SmoothMu_cle - Sadece cluster 2 gen sayısı: {len(only_2_genes)}")
+print(f"SmoothMu_cle - Sadece cluster 3 gen sayısı: {len(only_3_genes)}")
+
+output_path = "/Users/lemannur/Desktop/SmoothMu_cle_gene_comparison.xlsx"
+combined_df.to_excel(output_path, index=False)
+print(f"SmoothMu_cle sonuçları {output_path} dosyasına kaydedildi.")
+
+# Ma_t cluster 2 için filtreleme
+filtered_Ma_t_cluster_2_stats = Ma_t_cluster_2_stats[
+    (Ma_t_cluster_2_stats['std_expression'] < 1) &
+    (Ma_t_cluster_2_stats['var_expression'] < 1)
+].copy()
+
+print(f"Ma_t cluster 2 filtered gen sayısı: {filtered_Ma_t_cluster_2_stats.shape[0]}")
+
+# Ma_t cluster 3 için filtreleme
+filtered_Ma_t_cluster_3_stats = Ma_t_cluster_3_stats[
+    (Ma_t_cluster_3_stats['std_expression'] < 1) &
+    (Ma_t_cluster_3_stats['var_expression'] < 1)
+].copy()
+
+print(f"Ma_t cluster 3 filtered gen sayısı: {filtered_Ma_t_cluster_3_stats.shape[0]}")
+filtered_Ma_t_cluster_2_stats.to_excel("/Users/lemannur/Desktop/filtered_Ma_t_cluster_2_stats.xlsx", index=False)
+filtered_Ma_t_cluster_3_stats.to_excel("/Users/lemannur/Desktop/filtered_Ma_t_cluster_3_stats.xlsx", index=False)
+
+
+# Ma_t için
+genes_2 = set(Ma_t_cluster_2_stats['genes'])
+genes_3 = set(Ma_t_cluster_3_stats['genes'])
+
+common_genes = genes_2.intersection(genes_3)
+only_2_genes = genes_2 - genes_3
+only_3_genes = genes_3 - genes_2
+
+common_df = pd.DataFrame({'genes': sorted(common_genes), 'category': 'common'})
+only_2_df = pd.DataFrame({'genes': sorted(only_2_genes), 'category': 'only_cluster_2'})
+only_3_df = pd.DataFrame({'genes': sorted(only_3_genes), 'category': 'only_cluster_3'})
+
+combined_df = pd.concat([common_df, only_2_df, only_3_df], ignore_index=True)
+
+print(f"Ma_t - Ortak gen sayısı: {len(common_genes)}")
+print(f"Ma_t - Sadece cluster 2 gen sayısı: {len(only_2_genes)}")
+print(f"Ma_t - Sadece cluster 3 gen sayısı: {len(only_3_genes)}")
+
+output_path = "/Users/lemannur/Desktop/Ma_t_gene_comparison.xlsx"
+combined_df.to_excel(output_path, index=False)
+print(f"Ma_t sonuçları {output_path} dosyasına kaydedildi.")
+
+
+####
+import pandas as pd
+
+data = {
+    'cell_type': ['B cell', 'DC', 'endo', 'Epi', 'EpiT', 'Macro', 'Mono', 'Tcd4', 'plasma', 'T cell'],
+    'common': [730, 1173, 607, 130, 12678, 4301, 3407, 4221, 192, 2744],
+    'cluster_2': [653, 5280, 108, 3, 483, 4579, 3499, 4183, 373, 1039],
+    'cluster_3': [259, 10, 2026, 804, 993, 53, 80, 91, 205, 1061]
+}
+
+df = pd.DataFrame(data)
+print(df)
