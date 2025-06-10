@@ -1,0 +1,572 @@
+#mono icin
+import pandas as pd
+# Dosya yolu
+file_path = "/Users/lemannur/Desktop/clusters_gene_expression_summary/Mono_gene_comparison.xlsx"
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı göster
+print(df.head())
+
+# 1. Category sütunundaki benzersiz değerleri bul
+categories = df['Category'].unique()
+print("Categories:", categories)
+
+# Common kategorisine ait genleri al
+mono_commons = df[df['Category'] == 'Common']
+
+# Only_Cluster_2 kategorisine ait genleri al
+mono_cluster2 = df[df['Category'] == 'Only_Cluster_2']
+
+# Only_Cluster_3 kategorisine ait genleri al
+mono_cluster3 = df[df['Category'] == 'Only_Cluster_3']
+
+print("mono_commons length:", len(mono_commons))
+print("mono_cluster2 length:", len(mono_cluster2))
+print("mono_cluster3 length:", len(mono_cluster3))
+
+
+# Dosya yolları
+file_path_3 = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered/filtered_Mono_cluster_3_stats.xlsx"
+file_path_2 = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered/filtered_Mono_cluster_2_stats.xlsx"
+
+
+# Excel dosyalarını oku ve isimlerini koruyarak DataFrame olarak ata
+filtered_Mono_cluster_3_stats = pd.read_excel(file_path_3)
+filtered_Mono_cluster_2_stats = pd.read_excel(file_path_2)
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("Cluster 3 Stats Preview:")
+print(filtered_Mono_cluster_3_stats.head())
+print("\nCluster 2 Stats Preview:")
+print(filtered_Mono_cluster_2_stats.head())
+
+
+mono_cluster2 = mono_cluster2.merge(
+    filtered_Mono_cluster_2_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+)
+
+mono_cluster3 = mono_cluster3.merge(
+    filtered_Mono_cluster_3_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+)
+print(mono_cluster2.columns)
+print(mono_cluster3.columns)
+
+# Önce Cluster 2'den mean ve median ekleyelim
+mono_commons = mono_commons.merge(
+    filtered_Mono_cluster_2_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+).rename(columns={
+    'mean_expression': 'mean_expression_cluster2',
+    'median_expression': 'median_expression_cluster2'
+})
+
+# 'genes' sütunu merge'den geldiği için tekrar eden sütunu silelim
+mono_commons.drop(columns=['genes'], inplace=True)
+
+
+# Şimdi Cluster 3'ten mean ve median ekleyelim
+mono_commons = mono_commons.merge(
+    filtered_Mono_cluster_3_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+).rename(columns={
+    'mean_expression': 'mean_expression_cluster3',
+    'median_expression': 'median_expression_cluster3'
+})
+
+# Yine gereksiz 'genes' sütununu kaldıralım
+mono_commons.drop(columns=['genes'], inplace=True)
+print(mono_commons.columns)
+
+
+
+# Mean expression değerlerinin maksimum ve minimumunu yazdır
+print("Mean expression (max):", mono_cluster2['mean_expression'].max())
+print("Mean expression (min):", mono_cluster2['mean_expression'].min())
+
+# Median expression değerlerinin maksimum ve minimumunu yazdır
+print("Median expression (max):", mono_cluster2['median_expression'].max())
+print("Median expression (min):", mono_cluster2['median_expression'].min())
+
+
+
+# Mean expression değerlerinin maksimum ve minimumunu yazdır
+print("Mean expression (max):", mono_cluster3['mean_expression'].max())
+print("Mean expression (min):", mono_cluster3['mean_expression'].min())
+
+# Median expression değerlerinin maksimum ve minimumunu yazdır
+print("Median expression (max):", mono_cluster3['median_expression'].max())
+print("Median expression (min):", mono_cluster3['median_expression'].min())
+
+# İlgili sütun adları
+columns_to_check = [
+    'mean_expression_cluster2',
+    'median_expression_cluster2',
+    'mean_expression_cluster3',
+    'median_expression_cluster3'
+]
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Güncel veriyi tanımla
+data = {
+    "Source": [
+        "mono_cluster2",
+        "mono_cluster3",
+        "mono_commons (cluster2)",
+        "mono_commons (cluster3)"
+    ],
+    "Mean_Min": [0.0447, 0.1359, 0.0447, 0.1359],
+    "Mean_Max": [1.8375, 0.7718, 1.8375, 0.7718]
+}
+
+df = pd.DataFrame(data)
+
+# Bar plot
+x = range(len(df))
+width = 0.35
+
+plt.figure(figsize=(10, 6))
+plt.bar([i - width/2 for i in x], df["Mean_Min"], width=width, label='Mean Min')
+plt.bar([i + width/2 for i in x], df["Mean_Max"], width=width, label='Mean Max')
+
+plt.xticks(ticks=x, labels=df["Source"], rotation=20)
+plt.ylabel("Mean Expression")
+plt.title("Min and Max Mean Expression per Group")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+# mono_cluster2 içindeki mean_expression sütununun ortalaması
+mean_mono_cluster2 = mono_cluster2['mean_expression'].mean()
+print("Mean of mono_cluster2:", mean_mono_cluster2)
+
+# mono_cluster3 içindeki mean_expression sütununun ortalaması
+mean_mono_cluster3 = mono_cluster3['mean_expression'].mean()
+print("Mean of mono_cluster3:", mean_mono_cluster3)
+
+
+# mono_commons içindeki mean_expression_cluster2 ve mean_expression_cluster3 ortalamaları
+mean_mono_common_cluster2 = mono_commons['mean_expression_cluster2'].mean()
+mean_mono_common_cluster3 = mono_commons['mean_expression_cluster3'].mean()
+print("Mean of mono_commons (cluster2):", mean_mono_common_cluster2)
+print("Mean of mono_commons (cluster3):", mean_mono_common_cluster3)
+###
+
+# mono_cluster2 içindeki median_expression sütununun ortalaması
+median_mono_cluster2 = mono_cluster2['median_expression'].mean()
+print("Median (mean value) of mono_cluster2:", median_mono_cluster2)
+
+# mono_cluster3 içindeki median_expression sütununun ortalaması
+median_mono_cluster3 = mono_cluster3['median_expression'].mean()
+print("Median (mean value) of mono_cluster3:", median_mono_cluster3)
+
+###
+
+# mono_commons içindeki median_expression_cluster2 ve median_expression_cluster3 ortalamaları
+median_mono_common_cluster2 = mono_commons['median_expression_cluster2'].mean()
+median_mono_common_cluster3 = mono_commons['median_expression_cluster3'].mean()
+print("Median (mean value) of mono_commons (cluster2):", median_mono_common_cluster2)
+print("Median (mean value) of mono_commons (cluster3):", median_mono_common_cluster3)
+
+#####
+
+# macro_cluster2
+std_mean_macro_cluster2 = macro_cluster2['mean_expression'].std()
+std_median_macro_cluster2 = macro_cluster2['median_expression'].std()
+
+# macro_cluster3
+std_mean_macro_cluster3 = macro_cluster3['mean_expression'].std()
+std_median_macro_cluster3 = macro_cluster3['median_expression'].std()
+
+# macro_commons (hem cluster2 hem cluster3 değerleri)
+std_mean_macro_common_cluster2 = macro_commons['mean_expression_cluster2'].std()
+std_median_macro_common_cluster2 = macro_commons['median_expression_cluster2'].std()
+
+std_mean_macro_common_cluster3 = macro_commons['mean_expression_cluster3'].std()
+std_median_macro_common_cluster3 = macro_commons['median_expression_cluster3'].std()
+
+# Sonuçları yazdır
+print("STD - macro_cluster2 | Mean:", std_mean_macro_cluster2, "| Median:", std_median_macro_cluster2)
+print("STD - macro_cluster3 | Mean:", std_mean_macro_cluster3, "| Median:", std_median_macro_cluster3)
+print("STD - macro_commons (cluster2) | Mean:", std_mean_macro_common_cluster2, "| Median:", std_median_macro_common_cluster2)
+print("STD - macro_commons (cluster3) | Mean:", std_mean_macro_common_cluster3, "| Median:", std_median_macro_common_cluster3)
+
+###
+
+# mono_cluster2
+std_mean_mono_cluster2 = mono_cluster2['mean_expression'].std()
+std_median_mono_cluster2 = mono_cluster2['median_expression'].std()
+
+# mono_cluster3
+std_mean_mono_cluster3 = mono_cluster3['mean_expression'].std()
+std_median_mono_cluster3 = mono_cluster3['median_expression'].std()
+
+# mono_commons (hem cluster2 hem cluster3 değerleri)
+std_mean_mono_common_cluster2 = mono_commons['mean_expression_cluster2'].std()
+std_median_mono_common_cluster2 = mono_commons['median_expression_cluster2'].std()
+
+std_mean_mono_common_cluster3 = mono_commons['mean_expression_cluster3'].std()
+std_median_mono_common_cluster3 = mono_commons['median_expression_cluster3'].std()
+
+# Sonuçları yazdır
+print("STD - mono_cluster2 | Mean:", std_mean_mono_cluster2, "| Median:", std_median_mono_cluster2)
+print("STD - mono_cluster3 | Mean:", std_mean_mono_cluster3, "| Median:", std_median_mono_cluster3)
+print("STD - mono_commons (cluster2) | Mean:", std_mean_mono_common_cluster2, "| Median:", std_median_mono_common_cluster2)
+print("STD - mono_commons (cluster3) | Mean:", std_mean_mono_common_cluster3, "| Median:", std_median_mono_common_cluster3)
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+import pandas as pd
+
+# Veriyi organize et (güncel değerlerle)
+data = {
+    'Metric': ['Mean', 'Mean', 'Mean', 'Mean',
+               'Median', 'Median', 'Median', 'Median',
+               'STD Mean', 'STD Mean', 'STD Mean', 'STD Mean',
+               'STD Median', 'STD Median', 'STD Median', 'STD Median'],
+    'Group': ['mono_cluster2', 'mono_cluster3', 'mono_commons_c2', 'mono_commons_c3'] * 4,
+    'Value': [
+        0.2731, 0.3003, 0.9207, 0.9119,
+        0.2618, 0.2842, 0.9199, 0.9106,
+        0.1554, 0.1085, 0.6367, 0.6490,
+        0.1558, 0.1071, 0.6488, 0.6639
+    ]
+}
+
+df = pd.DataFrame(data)
+# Görselleştirme: Barplot
+plt.figure(figsize=(12, 6))
+sns.barplot(data=df, x='Group', y='Value', hue='Metric')
+plt.title('Mono Feature Statistics by Cluster')
+plt.ylabel('Value')
+plt.ylim(0, 1)
+plt.legend(title='Metric')
+plt.tight_layout()
+plt.show()
+
+##daha guzel kod:
+import pandas as pd
+import matplotlib.pyplot as plt
+
+import pandas as pd
+
+# Verileri yapılandır (mono verileriyle güncellenmiş)
+data = {
+    "Group": [
+        "mono_cluster2", "mono_cluster3",
+        "mono_commons (cluster2)", "mono_commons (cluster3)"
+    ],
+    "Mean": [
+        0.27311596710054126, 0.3002667361376912,
+        0.9206508808330708, 0.9119081920468302
+    ],
+    "Median": [
+        0.2618138363406642, 0.2841610099179737,
+        0.9198715798415642, 0.9106232528107014
+    ],
+    "STD (Mean)": [
+        0.15540326986497308, 0.1085194718042292,
+        0.6367254723706832, 0.6490406551231347
+    ],
+    "STD (Median)": [
+        0.15575781759972743, 0.1071023935326373,
+        0.648808478336321, 0.6638729814474968
+    ]
+}
+
+# DataFrame'e çevir
+df = pd.DataFrame(data)
+
+
+# Grafik çizimi
+plt.figure(figsize=(12, 6))
+x = range(len(df))
+
+# Ortalama değerler (Mean ve Median)
+plt.bar([i - 0.2 for i in x], df["Mean"], width=0.2, label="Mean", color="skyblue")
+plt.bar([i for i in x], df["Median"], width=0.2, label="Median", color="lightgreen")
+
+# Hata barları (standart sapma)
+plt.errorbar([i - 0.2 for i in x], df["Mean"], yerr=df["STD (Mean)"], fmt='o', color='blue', capsize=5)
+plt.errorbar([i for i in x], df["Median"], yerr=df["STD (Median)"], fmt='o', color='green', capsize=5)
+
+# Etiketler ve düzenlemeler
+plt.xticks(ticks=x, labels=df["Group"], rotation=15)
+plt.ylabel("Expression Level")
+plt.title("Mean and Median Expression Levels with Standard Deviation")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+#mono icin
+
+# Dosya yolları
+file_path_cluster2 = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/Mono_cluster_2.xlsx"
+file_path_cluster3 = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/Mono_cluster_3.xlsx"
+
+#mono icin
+# Excel dosyalarını oku
+mono_cluster2_raw = pd.read_excel(file_path_cluster2)
+mono_cluster3_raw = pd.read_excel(file_path_cluster3)
+
+
+#mono icin
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("mono_cluster2_raw preview:")
+print(mono_cluster2_raw.head())
+
+print("\nmono_cluster3_raw preview:")
+print(mono_cluster3_raw.head())
+
+# mono_cluster2 içindeki gen isimlerini liste olarak al
+selected_genes = mono_cluster2['Gene'].tolist()
+len(selected_genes)
+
+# Bu genlere karşılık gelen satırları mono_cluster2_raw içinden filtrele
+mono_cluster2_expr = mono_cluster2_raw[mono_cluster2_raw['genes'].isin(selected_genes)]
+
+
+# İlk birkaç satırı göster
+print(mono_cluster2_expr.head())
+
+print(mono_cluster3_expr.columns)
+print(mono_cluster2_expr.columns)
+####
+
+
+# macro_cluster3 içindeki gen isimlerini liste olarak al
+selected_genes_3 = mono_cluster3['Gene'].tolist()
+len(selected_genes_3)
+
+# Bu genlere karşılık gelen satırları macro_cluster3_raw içinden filtrele
+mono_cluster3_expr = mono_cluster3_raw[mono_cluster3_raw['genes'].isin(selected_genes_3)]
+
+# İlk birkaç satırı göster
+print(mono_cluster3_expr.head())
+
+
+####
+
+# mono_commons içindeki gen isimlerini liste olarak al
+common_genes = mono_commons['Gene'].tolist()
+
+# Bu genlere karşılık gelen satırları macro_cluster2_raw içinden filtrele
+mono_commons_expr_cluster2 = mono_cluster2_raw[mono_cluster2_raw['genes'].isin(common_genes)]
+
+# İlk birkaç satırı yazdır
+print(mono_commons_expr_cluster2.head())
+###
+
+# Bu genlere karşılık gelen satırları mono_cluster3_raw içinden filtrele
+mono_commons_expr_cluster3 = mono_cluster3_raw[mono_cluster3_raw['genes'].isin(common_genes)]
+
+# İlk birkaç satırı yazdır
+print(mono_commons_expr_cluster3.head())
+
+import pandas as pd
+from scipy.stats import mannwhitneyu
+
+# Ortak genleri alalım
+common_genes = set(mono_commons_expr_cluster2['genes']).intersection(set(mono_commons_expr_cluster3['genes']))
+#mono_commons_expr_cluster2
+#mono_commons_expr_cluster3
+
+# Sonuçları saklamak için liste
+results = []
+####
+#commonlar icin
+
+# Her ortak gen için test yapalım
+for gene in common_genes:
+    # İlgili satırı al
+    expr_cluster2 = mono_commons_expr_cluster2[mono_commons_expr_cluster2['genes'] == gene].iloc[:, 1:].values.flatten()
+    expr_cluster3 = mono_commons_expr_cluster3[mono_commons_expr_cluster3['genes'] == gene].iloc[:, 1:].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results.append({'gene': gene, 'U_statistic': stat, 'p_value': p})
+
+# Sonuçları DataFrame’e çevir
+results_df = pd.DataFrame(results)
+
+# İsteğe bağlı: p-değerine göre sırala
+results_df = results_df.sort_values('p_value')
+
+# İlk 5 sonucu göster
+print(results_df.head())
+
+
+from statsmodels.stats.multitest import multipletests
+
+
+# FDR düzeltmesi (Benjamini-Hochberg yöntemi)
+_, adj_pvals, _, _ = multipletests(results_df['p_value'], method='fdr_bh')
+
+# Yeni sütun olarak ekle
+results_df['adj_p_value'] = adj_pvals
+
+# p-value'a göre sırala
+results_df = results_df.sort_values('adj_p_value')
+
+# Sonuçları göster
+print(results_df.head())
+
+results_df.to_excel("mannwhitney_results.xlsx", index=False)
+
+#check ediyorum arada baska seyleri::
+
+print(mono_cluster2_expr.shape[0])
+print(mono_cluster3_expr.shape[0])
+
+import pandas as pd
+
+# Dosya yolu
+file_path = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/Aggregated_log2Exp_Mono.xlsx"
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı kontrol et
+print(df.head())
+
+####
+
+# 'genes' dışındaki sütun isimlerini liste olarak al
+sample_columns = [col for col in mono_cluster3_expr.columns if col != 'genes']
+
+# Sonucu yazdır
+print(sample_columns)
+
+####
+
+# Yeni DataFrame için seçilecek sütunlar: 'genes' + sample_columns
+selected_columns = ['genes'] + sample_columns
+
+# Yeni DataFrame'i oluştur
+subset_df = df[selected_columns]
+
+# İlk birkaç satırı kontrol et
+print(subset_df.head())
+num_columns = subset_df.shape[1]
+print("Number of columns:", num_columns)
+
+print("mono_cluster3_expr columns:", mono_cluster3_expr.columns)
+print("subset_df columns:", subset_df.columns)
+
+
+import pandas as pd
+from scipy.stats import mannwhitneyu
+
+####
+
+
+
+# Ortak genleri bul
+#common_genes = set(mono_cluster2_expr['genes']).intersection(set(subset_df['genes']))
+
+# Sonuçları tutacak liste
+#results = []
+
+# Ortak genler için Mann-Whitney testi
+#for gene in common_genes:
+   # values_1 = mono_cluster2_expr[mono_cluster2_expr['genes'] == gene].drop(columns='genes').values.flatten()
+   # values_2 = subset_df[subset_df['genes'] == gene].drop(columns='genes').values.flatten()
+
+    # Eğer iki grup da boş değilse testi uygula
+ #   if len(values_1) > 0 and len(values_2) > 0:
+  #      stat, p_value = mannwhitneyu(values_1, values_2, alternative='two-sided')
+   #     results.append({'gene': gene, 'U_statistic': stat, 'p_value': p_value})
+
+# Sonuçları DataFrame'e çevir
+#mannwhitney_results_df = pd.DataFrame(results)
+
+# p-değerine göre sırala (opsiyonel)
+# mannwhitney_results_df = mannwhitney_results_df.sort_values(by='p_value')
+
+# Sonuçları göster
+# print(mannwhitney_results_df.head())
+# mannwhitney_results_df.to_excel("mannwhitney_results.xlsx", index=False)
+
+#cluster_2 icin:
+from scipy.stats import mannwhitneyu
+
+# Seçilen genler için her birinde test yap
+results = {}
+for gene in selected_genes:
+    # Genin ekspresyon değerlerini al
+    expr_cluster2 = df[df["genes"] == gene][cluster_2_libraries].values.flatten()
+    expr_cluster3 = df[df["genes"] == gene][cluster_3_libraries].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p_value = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results[gene] = {
+        "statistic": stat,
+        "p_value": p_value,
+        "significant": p_value < 0.05  # 0.05 eşik değeri
+    }
+
+# Sonuçları DataFrame'e çevir
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+#results_df.to_csv("mannwhitney_results.csv", index=False)
+#results_df.to_excel("mannwhitney_results.xlsx", index=False, sheet_name="Test_Results")
+#print("Sonuçlar 'mannwhitney_results.csv' olarak kaydedildi!")
+
+# Gen isimlerini indeksten sütuna al
+results_df = results_df.reset_index().rename(columns={'index': 'Gene'})
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results_with_genes.xlsx", index=False)
+
+
+###cluster 3 icin:
+
+from scipy.stats import mannwhitneyu
+
+# Seçilen genler için her birinde test yap
+results = {}
+for gene in selected_genes_3:
+    # Genin ekspresyon değerlerini al
+    expr_cluster2 = df[df["genes"] == gene][cluster_2_libraries].values.flatten()
+    expr_cluster3 = df[df["genes"] == gene][cluster_3_libraries].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p_value = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results[gene] = {
+        "statistic": stat,
+        "p_value": p_value,
+        "significant": p_value < 0.05  # 0.05 eşik değeri
+    }
+
+# Sonuçları DataFrame'e çevir
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+#results_df.to_csv("mannwhitney_results.csv", index=False)
+#results_df.to_excel("mannwhitney_results.xlsx", index=False, sheet_name="Test_Results")
+#print("Sonuçlar 'mannwhitney_results.csv' olarak kaydedildi!")
+
+# Gen isimlerini indeksten sütuna al
+results_df = results_df.reset_index().rename(columns={'index': 'Gene'})
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results_with_genes.xlsx", index=False)
+
