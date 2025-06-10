@@ -1,0 +1,521 @@
+# Dosya yolu
+file_path = "/Users/lemannur/Desktop/clusters_gene_expression_summary/DC_gene_comparison.xlsx"
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı göster
+print(df.head())
+#############
+
+# 1. Category sütunundaki benzersiz değerleri bul
+categories = df['Category'].unique()
+print("Categories:", categories)
+
+# Common kategorisine ait genleri al
+DC_commons = df[df['Category'] == 'Common']
+
+# Only_Cluster_2 kategorisine ait genleri al
+DC_cluster2 = df[df['Category'] == 'Only_Cluster_2']
+
+# Only_Cluster_3 kategorisine ait genleri al
+DC_cluster3 = df[df['Category'] == 'Only_Cluster_3']
+
+
+print("DC_commons length:", len(DC_commons))
+print("DC_cluster2 length:", len(DC_cluster2))
+print("DC_cluster3 length:", len(DC_cluster3))
+
+##############
+
+
+# Dosya yolları
+file_path_3 = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered/filtered_DC_cluster_3_stats.xlsx"
+file_path_2 = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered/filtered_DC_cluster_2_stats.xlsx"
+
+
+# Excel dosyalarını oku ve isimlerini koruyarak DataFrame olarak ata
+filtered_DC_cluster_3_stats = pd.read_excel(file_path_3)
+filtered_DC_cluster_2_stats = pd.read_excel(file_path_2)
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("Cluster 3 Stats Preview:")
+print(filtered_DC_cluster_3_stats.head())
+print("\nCluster 2 Stats Preview:")
+print(filtered_DC_cluster_2_stats.head())
+
+DC_cluster2 = DC_cluster2.merge(
+    filtered_DC_cluster_2_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+)
+
+DC_cluster3 = DC_cluster3.merge(
+    filtered_DC_cluster_3_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+)
+print(DC_cluster2.columns)
+print(DC_cluster3.columns)
+#########
+
+# Önce Cluster 2'den mean ve median ekleyelim
+DC_commons = DC_commons.merge(
+    filtered_DC_cluster_2_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+).rename(columns={
+    'mean_expression': 'mean_expression_cluster2',
+    'median_expression': 'median_expression_cluster2'
+})
+
+# 'genes' sütunu merge'den geldiği için tekrar eden sütunu silelim
+DC_commons.drop(columns=['genes'], inplace=True)
+#################
+
+# Şimdi Cluster 3'ten mean ve median ekleyelim
+DC_commons = DC_commons.merge(
+    filtered_DC_cluster_3_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+).rename(columns={
+    'mean_expression': 'mean_expression_cluster3',
+    'median_expression': 'median_expression_cluster3'
+})
+
+# Yine gereksiz 'genes' sütununu kaldıralım
+DC_commons.drop(columns=['genes'], inplace=True)
+print(DC_commons.columns)
+#######################
+
+
+# Mean expression değerlerinin maksimum ve minimumunu yazdır
+print("Mean expression (max):", DC_cluster2['mean_expression'].max())
+print("Mean expression (min):", DC_cluster2['mean_expression'].min())
+
+# Median expression değerlerinin maksimum ve minimumunu yazdır
+print("Median expression (max):", DC_cluster2['median_expression'].max())
+print("Median expression (min):", DC_cluster2['median_expression'].min())
+
+
+
+# Mean expression değerlerinin maksimum ve minimumunu yazdır
+print("Mean expression (max):", DC_cluster3['mean_expression'].max())
+print("Mean expression (min):", DC_cluster3['mean_expression'].min())
+
+# Median expression değerlerinin maksimum ve minimumunu yazdır
+print("Median expression (max):", DC_cluster3['median_expression'].max())
+print("Median expression (min):", DC_cluster3['median_expression'].min())
+
+
+# İlgili sütun adları
+columns_to_check = [
+    'mean_expression_cluster2',
+    'median_expression_cluster2',
+    'mean_expression_cluster3',
+    'median_expression_cluster3'
+]
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+import pandas as pd
+
+# Güncel verilerle DataFrame oluşturma
+data = {
+    "Source": [
+        "mono_cluster2",
+        "mono_cluster3",
+        "mono_commons (cluster2)",
+        "mono_commons (cluster3)"
+    ],
+    # Mean değerleri
+    "Mean_Min": [0.04473426875456282, 0.1359320484134804, 0.04473426875456282, 0.1359320484134804],
+    "Mean_Max": [1.837511392316254, 0.771793908626091, 1.837511392316254, 0.771793908626091],
+    # Median değerleri
+    "Median_Min": [0.031483260425289, 0.11387579252605, 0.031483260425289, 0.11387579252605],
+    "Median_Max": [1.91507374551709, 0.739731700070572, 1.91507374551709, 0.739731700070572]
+}
+
+df = pd.DataFrame(data)
+
+# Sonucu göster
+print(df)
+
+
+# Bar plot
+x = range(len(df))
+width = 0.35
+
+plt.figure(figsize=(10, 6))
+plt.bar([i - width/2 for i in x], df["Mean_Min"], width=width, label='Mean Min')
+plt.bar([i + width/2 for i in x], df["Mean_Max"], width=width, label='Mean Max')
+
+plt.xticks(ticks=x, labels=df["Source"], rotation=20)
+plt.ylabel("Mean Expression")
+plt.title("Min and Max Mean Expression per Group")
+plt.legend()
+plt.tight_layout()
+plt.show()
+#########
+
+
+# DC_cluster2 içindeki mean_expression sütununun ortalaması
+mean_DC_cluster2 = DC_cluster2['mean_expression'].mean()
+print("Mean of DC_cluster2:", mean_DC_cluster2)
+
+# mono_cluster3 içindeki mean_expression sütununun ortalaması
+mean_DC_cluster3 = DC_cluster3['mean_expression'].mean()
+print("Mean of DC_cluster3:", mean_DC_cluster3)
+
+
+
+# DC_commons içindeki mean_expression_cluster2 ve mean_expression_cluster3 ortalamaları
+mean_DC_common_cluster2 = DC_commons['mean_expression_cluster2'].mean()
+mean_DC_common_cluster3 = DC_commons['mean_expression_cluster3'].mean()
+print("Mean of DC_commons (cluster2):", mean_DC_common_cluster2)
+print("Mean of DC_commons (cluster3):", mean_DC_common_cluster3)
+###
+
+# DC_cluster2 içindeki median_expression sütununun ortalaması
+median_DC_cluster2 = DC_cluster2['median_expression'].mean()
+print("Median (mean value) of DC_cluster2:", median_DC_cluster2)
+
+# DC_cluster3 içindeki median_expression sütununun ortalaması
+median_DC_cluster3 = DC_cluster3['median_expression'].mean()
+print("Median (mean value) of DC_cluster3:", median_DC_cluster3)
+########
+# DC_commons içindeki median_expression_cluster2 ve median_expression_cluster3 ortalamaları
+median_DC_common_cluster2 = DC_commons['median_expression_cluster2'].mean()
+median_DC_common_cluster3 = DC_commons['median_expression_cluster3'].mean()
+print("Median (mean value) of DC_commons (cluster2):", median_DC_common_cluster2)
+print("Median (mean value) of DC_commons (cluster3):", median_DC_common_cluster3)
+
+###########
+
+
+# DC_cluster2
+std_mean_DC_cluster2 = DC_cluster2['mean_expression'].std()
+std_median_DC_cluster2 = DC_cluster2['median_expression'].std()
+
+# DC_cluster3
+std_mean_DC_cluster3 = DC_cluster3['mean_expression'].std()
+std_median_DC_cluster3 = DC_cluster3['median_expression'].std()
+
+# DC_commons (hem cluster2 hem cluster3 değerleri)
+std_mean_DC_common_cluster2 = DC_commons['mean_expression_cluster2'].std()
+std_median_DC_common_cluster2 = DC_commons['median_expression_cluster2'].std()
+
+std_mean_DC_common_cluster3 = DC_commons['mean_expression_cluster3'].std()
+std_median_DC_common_cluster3 = DC_commons['median_expression_cluster3'].std()
+
+# Sonuçları yazdır
+print("STD - DC_cluster2 | Mean:", std_mean_DC_cluster2, "| Median:", std_median_DC_cluster2)
+print("STD - DC_cluster3 | Mean:", std_mean_DC_cluster3, "| Median:", std_median_DC_cluster3)
+print("STD - DC_commons (cluster2) | Mean:", std_mean_DC_common_cluster2, "| Median:", std_median_DC_common_cluster2)
+print("STD - DC_commons (cluster3) | Mean:", std_mean_DC_common_cluster3, "| Median:", std_median_DC_common_cluster3)
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+import pandas as pd
+data = {
+    'Metric': ['Mean', 'Mean', 'Mean', 'Mean',
+               'Median', 'Median', 'Median', 'Median',
+               'STD Mean', 'STD Mean', 'STD Mean', 'STD Mean',
+               'STD Median', 'STD Median', 'STD Median', 'STD Median'],
+    'Group': ['DC_cluster2', 'DC_cluster3', 'DC_commons_c2', 'DC_commons_c3'] * 4,
+    'Value': [
+        # Mean values
+        0.4674010679773781, 0.4616766111115839, 1.4046757079923209, 1.4170674338912992,
+        # Median values
+        0.4603523066556627, 0.42104963842760973, 1.4127948317921815, 1.4131550894675016,
+        # STD of Mean
+        0.28937737973341376, 0.17797003925794866, 0.7363712251441327, 0.7462204840050269,
+        # STD of Median
+        0.29436810950875986, 0.1826596360555626, 0.7439531709690768, 0.7619576952961509
+    ]
+}
+
+
+df = pd.DataFrame(data)
+# Görselleştirme: Barplot
+plt.figure(figsize=(12, 6))
+sns.barplot(data=df, x='Group', y='Value', hue='Metric')
+plt.title('Mono Feature Statistics by Cluster')
+plt.ylabel('Value')
+plt.ylim(0, 1)
+plt.legend(title='Metric')
+plt.tight_layout()
+plt.show()
+
+##daha guzel kod:
+import pandas as pd
+import matplotlib.pyplot as plt
+
+import pandas as pd
+data = {
+    "Group": [
+        "DC_cluster2", "DC_cluster3",
+        "DC_commons (cluster2)", "DC_commons (cluster3)"
+    ],
+    "Mean": [
+        0.4674010679773781, 0.4616766111115839,
+        1.4046757079923209, 1.4170674338912992
+    ],
+    "Median": [
+        0.4603523066556627, 0.42104963842760973,
+        1.4127948317921815, 1.4131550894675016
+    ],
+    "STD (Mean)": [
+        0.28937737973341376, 0.17797003925794866,
+        0.7363712251441327, 0.7462204840050269
+    ],
+    "STD (Median)": [
+        0.29436810950875986, 0.1826596360555626,
+        0.7439531709690768, 0.7619576952961509
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# DataFrame'e çevir
+df = pd.DataFrame(data)
+
+
+# Grafik çizimi
+plt.figure(figsize=(12, 6))
+x = range(len(df))
+
+# Ortalama değerler (Mean ve Median)
+plt.bar([i - 0.2 for i in x], df["Mean"], width=0.2, label="Mean", color="skyblue")
+plt.bar([i for i in x], df["Median"], width=0.2, label="Median", color="lightgreen")
+
+# Hata barları (standart sapma)
+plt.errorbar([i - 0.2 for i in x], df["Mean"], yerr=df["STD (Mean)"], fmt='o', color='blue', capsize=5)
+plt.errorbar([i for i in x], df["Median"], yerr=df["STD (Median)"], fmt='o', color='green', capsize=5)
+
+# Etiketler ve düzenlemeler
+plt.xticks(ticks=x, labels=df["Group"], rotation=15)
+plt.ylabel("Expression Level")
+plt.title("Mean and Median Expression Levels with Standard Deviation")
+plt.legend()
+plt.tight_layout()
+plt.show()
+#####################
+
+
+# Dosya yolları
+file_path_cluster2 = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/DC_cluster_2.xlsx"
+file_path_cluster3 = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/DC_cluster_3.xlsx"
+
+#mono icin
+# Excel dosyalarını oku
+DC_cluster2_raw = pd.read_excel(file_path_cluster2)
+DC_cluster3_raw = pd.read_excel(file_path_cluster3)
+###############
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("DC_cluster2_raw preview:")
+print(DC_cluster2_raw.head())
+
+print("\nDC_cluster3_raw preview:")
+print(DC_cluster3_raw.head())
+
+###########
+
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("DC_cluster2_raw preview:")
+print(DC_cluster2_raw.head())
+
+print("\nDC_cluster3_raw preview:")
+print(DC_cluster3_raw.head())
+
+# DC_cluster2 içindeki gen isimlerini liste olarak al
+selected_genes = DC_cluster2['Gene'].tolist()
+len(selected_genes)
+
+# Bu genlere karşılık gelen satırları DC_cluster2_raw içinden filtrele
+DC_cluster2_expr = DC_cluster2_raw[DC_cluster2_raw['genes'].isin(selected_genes)]
+
+
+# İlk birkaç satırı göster
+print(DC_cluster2_expr.head())
+
+##############
+# DC_cluster3 içindeki gen isimlerini liste olarak al
+selected_genes_3 = DC_cluster3['Gene'].tolist()
+len(selected_genes_3)
+
+# Bu genlere karşılık gelen satırları macro_cluster3_raw içinden filtrele
+DC_cluster3_expr = DC_cluster3_raw[DC_cluster3_raw['genes'].isin(selected_genes_3)]
+
+# İlk birkaç satırı göster
+print(DC_cluster3_expr.head())
+
+############
+# DC_commons içindeki gen isimlerini liste olarak al
+common_genes = DC_commons['Gene'].tolist()
+
+# Bu genlere karşılık gelen satırları macro_cluster2_raw içinden filtrele
+DC_commons_expr_cluster2 = DC_cluster2_raw[DC_cluster2_raw['genes'].isin(common_genes)]
+
+# İlk birkaç satırı yazdır
+print(DC_commons_expr_cluster2.head())
+#############
+
+
+
+# Bu genlere karşılık gelen satırları DC_cluster3_raw içinden filtrele
+DC_commons_expr_cluster3 = DC_cluster3_raw[DC_cluster3_raw['genes'].isin(common_genes)]
+
+# İlk birkaç satırı yazdır
+print(DC_commons_expr_cluster3.head())
+
+import pandas as pd
+from scipy.stats import mannwhitneyu
+#########
+
+# Ortak genleri alalım
+common_genes = set(DC_commons_expr_cluster2['genes']).intersection(set(DC_commons_expr_cluster3['genes']))
+
+
+# Sonuçları saklamak için liste
+results = []
+####
+#commonlar icin
+#################
+
+
+# Her ortak gen için test yapalım
+for gene in common_genes:
+    # İlgili satırı al
+    expr_cluster2 = DC_commons_expr_cluster2[DC_commons_expr_cluster2['genes'] == gene].iloc[:, 1:].values.flatten()
+    expr_cluster3 = DC_commons_expr_cluster3[DC_commons_expr_cluster3['genes'] == gene].iloc[:, 1:].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results.append({'gene': gene, 'U_statistic': stat, 'p_value': p})
+
+# Sonuçları DataFrame’e çevir
+results_df = pd.DataFrame(results)
+
+# İsteğe bağlı: p-değerine göre sırala
+results_df = results_df.sort_values('p_value')
+
+# İlk 5 sonucu göster
+print(results_df.head())
+
+
+from statsmodels.stats.multitest import multipletests
+
+
+# FDR düzeltmesi (Benjamini-Hochberg yöntemi)
+_, adj_pvals, _, _ = multipletests(results_df['p_value'], method='fdr_bh')
+
+# Yeni sütun olarak ekle
+results_df['adj_p_value'] = adj_pvals
+
+# p-value'a göre sırala
+results_df = results_df.sort_values('adj_p_value')
+
+# Sonuçları göster
+print(results_df.head())
+
+results_df.to_excel("mannwhitney_results.xlsx", index=False)
+
+
+
+#check ediyorum arada baska seyleri::
+
+print(DC_cluster2_expr.shape[0])
+print(DC_cluster3_expr.shape[0])
+######
+
+
+# Dosya yolu
+file_path = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/Aggregated_log2Exp_DC.xlsx"
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı kontrol et
+print(df.head())
+
+
+####################
+
+
+#cluster_2 icin:
+from scipy.stats import mannwhitneyu
+
+# Seçilen genler için her birinde test yap
+results = {}
+for gene in selected_genes:
+    # Genin ekspresyon değerlerini al
+    expr_cluster2 = df[df["genes"] == gene][cluster_2_libraries].values.flatten()
+    expr_cluster3 = df[df["genes"] == gene][cluster_3_libraries].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p_value = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results[gene] = {
+        "statistic": stat,
+        "p_value": p_value,
+        "significant": p_value < 0.05  # 0.05 eşik değeri
+    }
+
+# Sonuçları DataFrame'e çevir
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+#results_df.to_csv("mannwhitney_results.csv", index=False)
+#results_df.to_excel("mannwhitney_results.xlsx", index=False, sheet_name="Test_Results")
+#print("Sonuçlar 'mannwhitney_results.csv' olarak kaydedildi!")
+
+# Gen isimlerini indeksten sütuna al
+results_df = results_df.reset_index().rename(columns={'index': 'Gene'})
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results_with_genes.xlsx", index=False)
+
+#####################
+
+
+###cluster 3 icin:
+
+from scipy.stats import mannwhitneyu
+
+# Seçilen genler için her birinde test yap
+results = {}
+for gene in selected_genes_3:
+    # Genin ekspresyon değerlerini al
+    expr_cluster2 = df[df["genes"] == gene][cluster_2_libraries].values.flatten()
+    expr_cluster3 = df[df["genes"] == gene][cluster_3_libraries].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p_value = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results[gene] = {
+        "statistic": stat,
+        "p_value": p_value,
+        "significant": p_value < 0.05  # 0.05 eşik değeri
+    }
+
+# Sonuçları DataFrame'e çevir
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+#results_df.to_csv("mannwhitney_results.csv", index=False)
+#results_df.to_excel("mannwhitney_results.xlsx", index=False, sheet_name="Test_Results")
+#print("Sonuçlar 'mannwhitney_results.csv' olarak kaydedildi!")
+
+# Gen isimlerini indeksten sütuna al
+results_df = results_df.reset_index().rename(columns={'index': 'Gene'})
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results_with_genes.xlsx", index=False)
+
+
