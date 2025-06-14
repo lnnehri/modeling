@@ -1,0 +1,509 @@
+
+# Dosya yolu
+file_path = "/Users/lemannur/Desktop/clusters_gene_expression_summary/EpiT_gene_comparison.xlsx"
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı göster
+print(df.head())
+#############
+# 1. Category sütunundaki benzersiz değerleri bul
+categories = df['Category'].unique()
+print("Categories:", categories)
+
+# Common kategorisine ait genleri al
+EpiT_commons = df[df['Category'] == 'Common']
+
+# Only_Cluster_2 kategorisine ait genleri al
+EpiT_cluster2 = df[df['Category'] == 'Only_Cluster_2']
+
+# Only_Cluster_3 kategorisine ait genleri al
+EpiT_cluster3 = df[df['Category'] == 'Only_Cluster_3']
+
+print("EpiT_commons length:", len(EpiT_commons))
+print("EpiT_cluster2 length:", len(EpiT_cluster2))
+print("EpiT_cluster3 length:", len(EpiT_cluster3))
+##############
+
+
+
+# Dosya yolları
+file_path_3 = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered/filtered_EpiT_cluster_3_stats.xlsx"
+file_path_2 = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered/filtered_EpiT_cluster_2_stats.xlsx"
+# Excel dosyalarını oku ve isimlerini koruyarak DataFrame olarak ata
+filtered_EpiT_cluster_3_stats = pd.read_excel(file_path_3)
+filtered_EpiT_cluster_2_stats = pd.read_excel(file_path_2)
+
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("Cluster 3 Stats Preview:")
+print(filtered_EpiT_cluster_3_stats.head())
+print("\nCluster 2 Stats Preview:")
+print(filtered_EpiT_cluster_2_stats.head())
+##########
+EpiT_cluster2 = EpiT_cluster2.merge(
+    filtered_EpiT_cluster_2_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+)
+
+EpiT_cluster3 = EpiT_cluster3.merge(
+    filtered_EpiT_cluster_3_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+)
+
+print(EpiT_cluster2.columns)
+print(EpiT_cluster3.columns)
+
+###############
+
+# Önce Cluster 2'den mean ve median ekleyelim
+EpiT_commons = EpiT_commons.merge(
+    filtered_EpiT_cluster_2_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+).rename(columns={
+    'mean_expression': 'mean_expression_cluster2',
+    'median_expression': 'median_expression_cluster2'
+})
+
+# 'genes' sütunu merge'den geldiği için tekrar eden sütunu silelim
+EpiT_commons.drop(columns=['genes'], inplace=True)
+
+#############
+# Şimdi Cluster 3'ten mean ve median ekleyelim
+EpiT_commons = EpiT_commons.merge(
+    filtered_EpiT_cluster_3_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+).rename(columns={
+    'mean_expression': 'mean_expression_cluster3',
+    'median_expression': 'median_expression_cluster3'
+})
+
+# Yine gereksiz 'genes' sütununu kaldıralım
+EpiT_commons.drop(columns=['genes'], inplace=True)
+print(EpiT_commons.columns)
+
+#############################
+
+
+# Mean expression değerlerinin maksimum ve minimumunu yazdır
+print("Mean expression cluster2 (max):", EpiT_cluster2['mean_expression'].max())
+print("Mean expression cluster2 (min):", EpiT_cluster2['mean_expression'].min())
+
+# Median expression değerlerinin maksimum ve minimumunu yazdır
+print("Median expression cluster2 (max):", EpiT_cluster2['median_expression'].max())
+print("Median expression cluster2 (min):", EpiT_cluster2['median_expression'].min())
+
+# Mean expression değerlerinin maksimum ve minimumunu yazdır
+print("Mean expression cluster 3 (max):", EpiT_cluster3['mean_expression'].max())
+print("Mean expression cluster 3 (min):", EpiT_cluster3['mean_expression'].min())
+
+# Median expression değerlerinin maksimum ve minimumunu yazdır
+print("Median expression cluster 3 (max):", EpiT_cluster3['median_expression'].max())
+print("Median expression cluster 3 (min):", EpiT_cluster3['median_expression'].min())
+
+##################
+
+
+# Güncel verilerle DataFrame oluşturma
+data = {
+    "Source": [
+        "EpiT_cluster2",
+        "EpiT_cluster3",
+        "EpiT_commons (cluster2)",
+        "EpiT_commons (cluster3)"
+    ],
+    # Mean değerleri
+    "Mean_Min": [0.002116276021309361, 0.002412340786852279, 0.002116276021309361, 0.002412340786852279],
+    "Mean_Max": [0.6068955391895863, 1.306399314289929, 0.6068955391895863, 1.306399314289929],
+    # Median değerleri
+    "Median_Min": [0.00179751274925675, 0.00184390607155281, 0.00179751274925675, 0.00184390607155281],
+    "Median_Max": [0.5534050949531, 1.33358071725759, 0.5534050949531, 1.33358071725759]
+}
+
+df = pd.DataFrame(data)
+
+# Sonucu göster
+print(df)
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+
+# Bar plot
+x = range(len(df))
+width = 0.35
+
+plt.figure(figsize=(10, 6))
+plt.bar([i - width/2 for i in x], df["Mean_Min"], width=width, label='Mean Min')
+plt.bar([i + width/2 for i in x], df["Mean_Max"], width=width, label='Mean Max')
+
+plt.xticks(ticks=x, labels=df["Source"], rotation=20)
+plt.ylabel("Mean Expression")
+plt.title("Min and Max Mean Expression per Group")
+plt.legend()
+plt.tight_layout()
+plt.show()
+#########
+# EpiT_cluster2 içindeki mean_expression sütununun ortalaması
+mean_EpiT_cluster2 = EpiT_cluster2['mean_expression'].mean()
+print("Mean of EpiT_cluster2:", mean_EpiT_cluster2)
+
+# EpiT_cluster3 içindeki mean_expression sütununun ortalaması
+mean_EpiT_cluster3 = EpiT_cluster3['mean_expression'].mean()
+print("Mean of EpiT_cluster3:", mean_EpiT_cluster3)
+
+# EpiT_commons içindeki mean_expression_cluster2 ve mean_expression_cluster3 ortalamaları
+mean_EpiT_common_cluster2 = EpiT_commons['mean_expression_cluster2'].mean()
+mean_EpiT_common_cluster3 = EpiT_commons['mean_expression_cluster3'].mean()
+print("Mean of EpiT_commons (cluster2):", mean_EpiT_common_cluster2)
+print("Mean of EpiT_commons (cluster3):", mean_EpiT_common_cluster3)
+
+# EpiT_cluster2 içindeki median_expression sütununun ortalaması
+median_EpiT_cluster2 = EpiT_cluster2['median_expression'].mean()
+print("Median (mean value) of EpiT_cluster2:", median_EpiT_cluster2)
+
+# EpiT_cluster3 içindeki median_expression sütununun ortalaması
+median_EpiT_cluster3 = EpiT_cluster3['median_expression'].mean()
+print("Median (mean value) of EpiT_cluster3:", median_EpiT_cluster3)
+
+# EpiT_commons içindeki median_expression_cluster2 ve median_expression_cluster3 ortalamaları
+median_EpiT_common_cluster2 = EpiT_commons['median_expression_cluster2'].mean()
+median_EpiT_common_cluster3 = EpiT_commons['median_expression_cluster3'].mean()
+print("Median (mean value) of EpiT_commons (cluster2):", median_EpiT_common_cluster2)
+print("Median (mean value) of EpiT_commons (cluster3):", median_EpiT_common_cluster3)
+##############
+
+# EpiT_cluster2
+std_mean_EpiT_cluster2 = EpiT_cluster2['mean_expression'].std()
+std_median_EpiT_cluster2 = EpiT_cluster2['median_expression'].std()
+
+# EpiT_cluster3
+std_mean_EpiT_cluster3 = EpiT_cluster3['mean_expression'].std()
+std_median_EpiT_cluster3 = EpiT_cluster3['median_expression'].std()
+
+# EpiT_commons (hem cluster2 hem cluster3 değerleri)
+std_mean_EpiT_common_cluster2 = EpiT_commons['mean_expression_cluster2'].std()
+std_median_EpiT_common_cluster2 = EpiT_commons['median_expression_cluster2'].std()
+
+std_mean_EpiT_common_cluster3 = EpiT_commons['mean_expression_cluster3'].std()
+std_median_EpiT_common_cluster3 = EpiT_commons['median_expression_cluster3'].std()
+
+# Sonuçları yazdır
+print("STD - EpiT_cluster2 | Mean:", std_mean_EpiT_cluster2, "| Median:", std_median_EpiT_cluster2)
+print("STD - EpiT_cluster3 | Mean:", std_mean_EpiT_cluster3, "| Median:", std_median_EpiT_cluster3)
+print("STD - EpiT_commons (cluster2) | Mean:", std_mean_EpiT_common_cluster2, "| Median:", std_median_EpiT_common_cluster2)
+print("STD - EpiT_commons (cluster3) | Mean:", std_mean_EpiT_common_cluster3, "| Median:", std_median_EpiT_common_cluster3)
+##############
+
+
+####################
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+data = {
+    'Metric': ['Mean', 'Mean', 'Mean', 'Mean',
+               'Median', 'Median', 'Median', 'Median',
+               'STD Mean', 'STD Mean', 'STD Mean', 'STD Mean',
+               'STD Median', 'STD Median', 'STD Median', 'STD Median'],
+    'Group': ['EpiT_cluster2', 'EpiT_cluster3', 'EpiT_commons_c2', 'EpiT_commons_c3'] * 4,
+    'Value': [
+        # Mean values
+        0.04584003972271868, 0.050209012961406306, 0.3856180439647159, 0.3841452930124125,
+        # Median values
+        0.03295629732061558, 0.03863743573490526, 0.375358847949577, 0.37631793488899307,
+        # STD of Mean
+        0.0719341865071474, 0.08971549570276979, 0.45328447477077244, 0.457103505072478,
+        # STD of Median
+        0.06247875682525512, 0.08141006279891416, 0.4587719089955453, 0.4620585287756843
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# Görselleştirme: Barplot
+plt.figure(figsize=(12, 6))
+sns.barplot(data=df, x='Group', y='Value', hue='Metric')
+plt.title('EpiT Feature Statistics by Cluster')
+plt.ylabel('Value')
+plt.ylim(0, 0.6)
+plt.legend(title='Metric')
+plt.tight_layout()
+plt.show()
+
+###########
+import pandas as pd
+import matplotlib.pyplot as plt
+
+data = {
+    "Group": [
+        "EpiT_cluster2", "EpiT_cluster3",
+        "EpiT_commons (cluster2)", "EpiT_commons (cluster3)"
+    ],
+    "Mean": [
+        0.04584003972271868, 0.050209012961406306,
+        0.3856180439647159, 0.3841452930124125
+    ],
+    "Median": [
+        0.03295629732061558, 0.03863743573490526,
+        0.375358847949577, 0.37631793488899307
+    ],
+    "STD (Mean)": [
+        0.0719341865071474, 0.08971549570276979,
+        0.45328447477077244, 0.457103505072478
+    ],
+    "STD (Median)": [
+        0.06247875682525512, 0.08141006279891416,
+        0.4587719089955453, 0.4620585287756843
+    ]
+}
+
+df = pd.DataFrame(data)
+print(df)
+
+# Grafik çizimi
+plt.figure(figsize=(12, 6))
+x = range(len(df))
+
+# Ortalama değerler (Mean ve Median)
+plt.bar([i - 0.2 for i in x], df["Mean"], width=0.2, label="Mean", color="skyblue")
+plt.bar([i for i in x], df["Median"], width=0.2, label="Median", color="lightgreen")
+
+# Hata barları (standart sapma)
+plt.errorbar([i - 0.2 for i in x], df["Mean"], yerr=df["STD (Mean)"], fmt='o', color='blue', capsize=5)
+plt.errorbar([i for i in x], df["Median"], yerr=df["STD (Median)"], fmt='o', color='green', capsize=5)
+
+# Etiketler ve düzenlemeler
+plt.xticks(ticks=x, labels=df["Group"], rotation=15)
+plt.ylabel("Expression Level")
+plt.title("Mean and Median Expression Levels with Standard Deviation")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+#############
+
+
+
+# Dosya yolları
+file_path_cluster2 = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/EpiT_cluster_2.xlsx"
+file_path_cluster3 = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/EpiT_cluster_3.xlsx"
+
+# Excel dosyalarını oku
+EpiT_cluster2_raw = pd.read_excel(file_path_cluster2)
+EpiT_cluster3_raw = pd.read_excel(file_path_cluster3)
+
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("EpiT_cluster2_raw preview:")
+print(EpiT_cluster2_raw.head())
+
+print("\nEpiT_cluster3_raw preview:")
+print(EpiT_cluster3_raw.head())
+
+##############
+
+# EpiT_cluster2 içindeki gen isimlerini liste olarak al
+selected_genes = EpiT_cluster2['Gene'].tolist()
+len(selected_genes)
+
+# Bu genlere karşılık gelen satırları EpiT_cluster2_raw içinden filtrele
+EpiT_cluster2_expr = EpiT_cluster2_raw[EpiT_cluster2_raw['genes'].isin(selected_genes)]
+
+# İlk birkaç satırı göster
+print(EpiT_cluster2_expr.head())
+
+##########
+
+##############
+# EpiT_cluster3 içindeki gen isimlerini liste olarak al
+selected_genes_3 = EpiT_cluster3['Gene'].tolist()
+len(selected_genes_3)
+
+# Bu genlere karşılık gelen satırları EpiT_cluster3_raw içinden filtrele
+EpiT_cluster3_expr = EpiT_cluster3_raw[EpiT_cluster3_raw['genes'].isin(selected_genes_3)]
+
+# İlk birkaç satırı göster
+print(EpiT_cluster3_expr.head())
+
+################
+
+############
+# EpiT_commons içindeki gen isimlerini liste olarak al
+common_genes = EpiT_commons['Gene'].tolist()
+
+# Bu genlere karşılık gelen satırları EpiT_cluster2_raw içinden filtrele
+EpiT_commons_expr_cluster2 = EpiT_cluster2_raw[EpiT_cluster2_raw['genes'].isin(common_genes)]
+
+# İlk birkaç satırı yazdır
+print(EpiT_commons_expr_cluster2.head())
+
+###################
+
+#############
+# Bu genlere karşılık gelen satırları EpiT_cluster3_raw içinden filtrele
+EpiT_commons_expr_cluster3 = EpiT_cluster3_raw[EpiT_cluster3_raw['genes'].isin(common_genes)]
+
+# İlk birkaç satırı yazdır
+print(EpiT_commons_expr_cluster3.head())
+
+#####################
+
+
+
+import pandas as pd
+from scipy.stats import mannwhitneyu
+from statsmodels.stats.multitest import multipletests
+
+from scipy.stats import mannwhitneyu
+from statsmodels.stats.multitest import multipletests
+import pandas as pd
+
+# Ortak genleri alalım
+common_genes = set(EpiT_commons_expr_cluster2['genes']).intersection(set(EpiT_commons_expr_cluster3['genes']))
+
+# Sonuçları saklamak için liste
+results = []
+
+# Her ortak gen için test yapalım
+for gene in common_genes:
+    # İlgili satırı al
+    expr_cluster2 = EpiT_commons_expr_cluster2[EpiT_commons_expr_cluster2['genes'] == gene].iloc[:, 1:].values.flatten()
+    expr_cluster3 = EpiT_commons_expr_cluster3[EpiT_commons_expr_cluster3['genes'] == gene].iloc[:, 1:].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results.append({'gene': gene, 'U_statistic': stat, 'p_value': p})
+
+# Sonuçları DataFrame’e çevir
+results_df = pd.DataFrame(results)
+
+# İsteğe bağlı: p-değerine göre sırala
+results_df = results_df.sort_values('p_value')
+
+# İlk 5 sonucu göster
+print(results_df.head())
+
+# FDR düzeltmesi (Benjamini-Hochberg yöntemi)
+_, adj_pvals, _, _ = multipletests(results_df['p_value'], method='fdr_bh')
+
+# Yeni sütun olarak ekle
+results_df['adj_p_value'] = adj_pvals
+
+# adj_p_value'a göre sırala
+results_df = results_df.sort_values('adj_p_value')
+
+# Sonuçları göster
+print(results_df.head())
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results.xlsx", index=False)
+
+###########
+
+
+###########
+#check ediyorum arada baska seyleri::
+
+print(EpiT_cluster2_expr.shape[0])
+print(EpiT_cluster3_expr.shape[0])
+
+######
+
+
+
+# Dosya yolu
+file_path = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/Aggregated_log2Exp_EpiT.xlsx"
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı kontrol et
+print(df.head())
+
+
+#cluster_2 icin:
+from scipy.stats import mannwhitneyu
+
+# Seçilen genler için her birinde test yap
+results = {}
+for gene in selected_genes:
+    # Genin ekspresyon değerlerini al
+    expr_cluster2 = df[df["genes"] == gene][cluster_2_libraries].values.flatten()
+    expr_cluster3 = df[df["genes"] == gene][cluster_3_libraries].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p_value = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results[gene] = {
+        "statistic": stat,
+        "p_value": p_value,
+        "significant": p_value < 0.05  # 0.05 eşik değeri
+    }
+
+# Sonuçları DataFrame'e çevir
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+#results_df.to_csv("mannwhitney_results.csv", index=False)
+#results_df.to_excel("mannwhitney_results.xlsx", index=False, sheet_name="Test_Results")
+#print("Sonuçlar 'mannwhitney_results.csv' olarak kaydedildi!")
+
+# Gen isimlerini indeksten sütuna al
+results_df = results_df.reset_index().rename(columns={'index': 'Gene'})
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results_with_genes.xlsx", index=False)
+
+#####################
+
+
+#########
+###cluster 3 icin:
+
+from scipy.stats import mannwhitneyu
+
+# Seçilen genler için her birinde test yap
+results = {}
+for gene in selected_genes_3:
+    # Genin ekspresyon değerlerini al
+    expr_cluster2 = df[df["genes"] == gene][cluster_2_libraries].values.flatten()
+    expr_cluster3 = df[df["genes"] == gene][cluster_3_libraries].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p_value = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results[gene] = {
+        "statistic": stat,
+        "p_value": p_value,
+        "significant": p_value < 0.05  # 0.05 eşik değeri
+    }
+
+# Sonuçları DataFrame'e çevir
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+#results_df.to_csv("mannwhitney_results.csv", index=False)
+#results_df.to_excel("mannwhitney_results.xlsx", index=False, sheet_name="Test_Results")
+#print("Sonuçlar 'mannwhitney_results.csv' olarak kaydedildi!")
+
+# Gen isimlerini indeksten sütuna al
+results_df = results_df.reset_index().rename(columns={'index': 'Gene'})
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results_with_genes.xlsx", index=False)
+
+##########
