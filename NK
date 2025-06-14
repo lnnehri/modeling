@@ -1,0 +1,501 @@
+# Dosya yolu
+file_path = "/Users/lemannur/Desktop/clusters_gene_expression_summary/NK_gene_comparison.xlsx"
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı göster
+print(df.head())
+#############
+# 1. Category sütunundaki benzersiz değerleri bul
+categories = df['Category'].unique()
+print("Categories:", categories)
+
+# Common kategorisine ait genleri al
+NK_commons = df[df['Category'] == 'Common']
+
+# Only_Cluster_2 kategorisine ait genleri al
+NK_cluster2 = df[df['Category'] == 'Only_Cluster_2']
+
+# Only_Cluster_3 kategorisine ait genleri al
+NK_cluster3 = df[df['Category'] == 'Only_Cluster_3']
+
+print("NK_commons length:", len(NK_commons))
+print("NK_cluster2 length:", len(NK_cluster2))
+print("NK_cluster3 length:", len(NK_cluster3))
+
+######################
+
+
+# Dosya yolları
+file_path_3 = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered/filtered_NK_cluster_3_stats.xlsx"
+file_path_2 = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered/filtered_NK_cluster_2_stats.xlsx"
+# Excel dosyalarını oku ve isimlerini koruyarak DataFrame olarak ata
+
+
+filtered_NK_cluster_3_stats = pd.read_excel(file_path_3)
+filtered_NK_cluster_2_stats = pd.read_excel(file_path_2)
+
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("Cluster 3 Stats Preview:")
+print(filtered_NK_cluster_3_stats.head())
+print("\nCluster 2 Stats Preview:")
+print(filtered_NK_cluster_2_stats.head())
+
+###############
+
+
+#############
+NK_cluster2 = NK_cluster2.merge(
+    filtered_NK_cluster_2_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+)
+
+NK_cluster3 = NK_cluster3.merge(
+    filtered_NK_cluster_3_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+)
+
+print(NK_cluster2.columns)
+print(NK_cluster3.columns)
+###############
+
+# Önce Cluster 2'den mean ve median ekleyelim
+NK_commons = NK_commons.merge(
+    filtered_NK_cluster_2_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+).rename(columns={
+    'mean_expression': 'mean_expression_cluster2',
+    'median_expression': 'median_expression_cluster2'
+})
+
+# 'genes' sütunu merge'den geldiği için tekrar eden sütunu silelim
+NK_commons.drop(columns=['genes'], inplace=True)
+#############
+
+# Şimdi Cluster 3'ten mean ve median ekleyelim
+NK_commons = NK_commons.merge(
+    filtered_NK_cluster_3_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+).rename(columns={
+    'mean_expression': 'mean_expression_cluster3',
+    'median_expression': 'median_expression_cluster3'
+})
+
+# Yine gereksiz 'genes' sütununu kaldıralım
+NK_commons.drop(columns=['genes'], inplace=True)
+print(NK_commons.columns)
+
+#############
+
+
+# Mean expression değerlerinin maksimum ve minimumunu yazdır
+print("Mean expression cluster2 (max):", NK_cluster2['mean_expression'].max())
+print("Mean expression cluster2 (min):", NK_cluster2['mean_expression'].min())
+
+# Median expression değerlerinin maksimum ve minimumunu yazdır
+print("Median expression cluster2 (max):", NK_cluster2['median_expression'].max())
+print("Median expression cluster2 (min):", NK_cluster2['median_expression'].min())
+
+# Mean expression değerlerinin maksimum ve minimumunu yazdır
+print("Mean expression cluster 3 (max):", NK_cluster3['mean_expression'].max())
+print("Mean expression cluster 3 (min):", NK_cluster3['mean_expression'].min())
+
+# Median expression değerlerinin maksimum ve minimumunu yazdır
+print("Median expression cluster 3 (max):", NK_cluster3['median_expression'].max())
+print("Median expression cluster 3 (min):", NK_cluster3['median_expression'].min())
+
+#####################
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Güncel verilerle DataFrame oluşturma
+data = {
+    "Source": [
+        "NK_cluster2",
+        "NK_cluster3",
+        "NK_commons (cluster2)",
+        "NK_commons (cluster3)"
+    ],
+    # Mean değerleri
+    "Mean_Min": [0.3012176647606076, 0.599367316164071, 0.3012176647606076, 0.599367316164071],
+    "Mean_Max": [2.968843840416259, 1.437539181528663, 2.968843840416259, 1.437539181528663],
+    # Median değerleri
+    "Median_Min": [0.146063874509438, 0.519966379121661, 0.146063874509438, 0.519966379121661],
+    "Median_Max": [3.01701597099867, 1.42458816155387, 3.01701597099867, 1.42458816155387]
+}
+
+df = pd.DataFrame(data)
+
+# Sonucu göster
+print(df)
+
+# Bar plot
+x = range(len(df))
+width = 0.35
+
+plt.figure(figsize=(10, 6))
+plt.bar([i - width/2 for i in x], df["Mean_Min"], width=width, label='Mean Min')
+plt.bar([i + width/2 for i in x], df["Mean_Max"], width=width, label='Mean Max')
+
+plt.xticks(ticks=x, labels=df["Source"], rotation=20)
+plt.ylabel("Mean Expression")
+plt.title("Min and Max Mean Expression per Group")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+#####################
+
+# NK_cluster2 içindeki mean_expression sütununun ortalaması
+mean_NK_cluster2 = NK_cluster2['mean_expression'].mean()
+print("Mean of NK_cluster2:", mean_NK_cluster2)
+
+# NK_cluster3 içindeki mean_expression sütununun ortalaması
+mean_NK_cluster3 = NK_cluster3['mean_expression'].mean()
+print("Mean of NK_cluster3:", mean_NK_cluster3)
+
+# NK_commons içindeki mean_expression_cluster2 ve mean_expression_cluster3 ortalamaları
+mean_NK_common_cluster2 = NK_commons['mean_expression_cluster2'].mean()
+mean_NK_common_cluster3 = NK_commons['mean_expression_cluster3'].mean()
+print("Mean of NK_commons (cluster2):", mean_NK_common_cluster2)
+print("Mean of NKcommons (cluster3):", mean_NK_common_cluster3)
+
+# NK_cluster2 içindeki median_expression sütununun ortalaması
+median_NK_cluster2 = NK_cluster2['median_expression'].mean()
+print("Median (mean value) of NK_cluster2:", median_NK_cluster2)
+
+# NK_cluster3 içindeki median_expression sütununun ortalaması
+median_NK_cluster3 = NK_cluster3['median_expression'].mean()
+print("Median (mean value) of NK_cluster3:", median_NK_cluster3)
+
+# NK_commons içindeki median_expression_cluster2 ve median_expression_cluster3 ortalamaları
+median_NK_common_cluster2 = NK_commons['median_expression_cluster2'].mean()
+median_NK_common_cluster3 = NK_commons['median_expression_cluster3'].mean()
+print("Median (mean value) of NK_commons (cluster2):", median_NK_common_cluster2)
+print("Median (mean value) of NK_commons (cluster3):", median_NK_common_cluster3)
+
+# NK_cluster2
+std_mean_NK_cluster2 = NK_cluster2['mean_expression'].std()
+std_median_NK_cluster2 = NK_cluster2['median_expression'].std()
+
+# NK_cluster3
+std_mean_NK_cluster3 = NK_cluster3['mean_expression'].std()
+std_median_NK_cluster3 = NK_cluster3['median_expression'].std()
+
+# NK_commons (hem cluster2 hem cluster3 değerleri)
+std_mean_NK_common_cluster2 = NK_commons['mean_expression_cluster2'].std()
+std_median_NK_common_cluster2 = NK_commons['median_expression_cluster2'].std()
+
+std_mean_NK_common_cluster3 = NK_commons['mean_expression_cluster3'].std()
+std_median_NK_common_cluster3 = NK_commons['median_expression_cluster3'].std()
+
+# Sonuçları yazdır
+print("STD - NK_cluster2 | Mean:", std_mean_NK_cluster2, "| Median:", std_median_NK_cluster2)
+print("STD - NK_cluster3 | Mean:", std_mean_NK_cluster3, "| Median:", std_median_NK_cluster3)
+print("STD - NK_commons (cluster2) | Mean:", std_mean_NK_common_cluster2, "| Median:", std_median_NK_common_cluster2)
+print("STD - NK_commons (cluster3) | Mean:", std_mean_NK_common_cluster3, "| Median:", std_median_NK_common_cluster3)
+
+######################
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+data = {
+    'Metric': ['Mean', 'Mean', 'Mean', 'Mean',
+               'Median', 'Median', 'Median', 'Median',
+               'STD Mean', 'STD Mean', 'STD Mean', 'STD Mean',
+               'STD Median', 'STD Median', 'STD Median', 'STD Median'],
+    'Group': ['NK_cluster2', 'NK_cluster3', 'NK_commons_c2', 'NK_commons_c3'] * 4,
+    'Value': [
+        # Mean values
+        0.845978114363311, 0.939906504334016, 1.7599705010433142, 1.7705129899405798,
+        # Median values
+        0.8437916064432909, 0.9322877807124257, 1.7779857816046043, 1.787777246445339,
+        # STD of Mean
+        0.29063712714024365, 0.19502499220948794, 0.7001697467214048, 0.7102204108566169,
+        # STD of Median
+        0.2998552468337303, 0.20199939158490035, 0.7042708013516236, 0.7144491145526817
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# Görselleştirme: Barplot
+plt.figure(figsize=(12, 6))
+sns.barplot(data=df, x='Group', y='Value', hue='Metric')
+plt.title('NK Feature Statistics by Cluster')
+plt.ylabel('Value')
+plt.ylim(0, 3.8)
+plt.legend(title='Metric')
+plt.tight_layout()
+plt.show()
+
+####################
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+data = {
+    "Group": [
+        "NK_cluster2", "NK_cluster3",
+        "NK_commons (cluster2)", "NK_commons (cluster3)"
+    ],
+    "Mean": [
+        0.845978114363311, 0.939906504334016,
+        1.7599705010433142, 1.7705129899405798
+    ],
+    "Median": [
+        0.8437916064432909, 0.9322877807124257,
+        1.7779857816046043, 1.787777246445339
+    ],
+    "STD (Mean)": [
+        0.29063712714024365, 0.19502499220948794,
+        0.7001697467214048, 0.7102204108566169
+    ],
+    "STD (Median)": [
+        0.2998552468337303, 0.20199939158490035,
+        0.7042708013516236, 0.7144491145526817
+    ]
+}
+
+df = pd.DataFrame(data)
+print(df)
+
+# Grafik çizimi
+plt.figure(figsize=(12, 6))
+x = range(len(df))
+
+# Ortalama değerler (Mean ve Median)
+plt.bar([i - 0.2 for i in x], df["Mean"], width=0.2, label="Mean", color="skyblue")
+plt.bar([i for i in x], df["Median"], width=0.2, label="Median", color="lightgreen")
+
+# Hata barları (standart sapma)
+plt.errorbar([i - 0.2 for i in x], df["Mean"], yerr=df["STD (Mean)"], fmt='o', color='blue', capsize=5)
+plt.errorbar([i for i in x], df["Median"], yerr=df["STD (Median)"], fmt='o', color='green', capsize=5)
+
+# Etiketler ve düzenlemeler
+plt.xticks(ticks=x, labels=df["Group"], rotation=15)
+plt.ylabel("Expression Level")
+plt.title("Mean and Median Expression Levels with Standard Deviation (NK Cells)")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+######################
+
+
+
+
+# Dosya yolları
+file_path_cluster2 = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/NK_cluster_2.xlsx"
+file_path_cluster3 = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/NK_cluster_3.xlsx"
+
+
+######################
+
+# Excel dosyalarını oku
+NK_cluster2_raw = pd.read_excel(file_path_cluster2)
+NK_cluster3_raw = pd.read_excel(file_path_cluster3)
+###############
+
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("NK_cluster2_raw preview:")
+print(NK_cluster2_raw.head())
+
+print("\nNK_cluster3_raw preview:")
+print(NK_cluster3_raw.head())
+
+#######################
+
+# NK_cluster2 içindeki gen isimlerini liste olarak al
+selected_genes = NK_cluster2['Gene'].tolist()
+len(selected_genes)
+
+# Bu genlere karşılık gelen satırları NK_cluster2_raw içinden filtrele
+NK_cluster2_expr = NK_cluster2_raw[NK_cluster2_raw['genes'].isin(selected_genes)]
+
+# İlk birkaç satırı göster
+print(NK_cluster2_expr.head())
+
+###################
+
+##############
+# NK_cluster3 içindeki gen isimlerini liste olarak al
+selected_genes_3 = NK_cluster3['Gene'].tolist()
+len(selected_genes_3)
+
+# Bu genlere karşılık gelen satırları NK_cluster3_raw içinden filtrele
+NK_cluster3_expr = NK_cluster3_raw[NK_cluster3_raw['genes'].isin(selected_genes_3)]
+
+# İlk birkaç satırı göster
+print(NK_cluster3_expr.head())
+
+############
+# NK_commons içindeki gen isimlerini liste olarak al
+common_genes = NK_commons['Gene'].tolist()
+
+# Bu genlere karşılık gelen satırları NK_cluster2_raw içinden filtrele
+NK_commons_expr_cluster2 = NK_cluster2_raw[NK_cluster2_raw['genes'].isin(common_genes)]
+
+# İlk birkaç satırı yazdır
+print(NK_commons_expr_cluster2.head())
+
+#############
+# Bu genlere karşılık gelen satırları NK_cluster3_raw içinden filtrele
+NK_commons_expr_cluster3 = NK_cluster3_raw[NK_cluster3_raw['genes'].isin(common_genes)]
+
+# İlk birkaç satırı yazdır
+print(NK_commons_expr_cluster3.head())
+
+###############################
+
+import pandas as pd
+from scipy.stats import mannwhitneyu
+from statsmodels.stats.multitest import multipletests
+
+# Ortak genleri alalım
+common_genes = set(NK_commons_expr_cluster2['genes']).intersection(set(NK_commons_expr_cluster3['genes']))
+
+# Sonuçları saklamak için liste
+results = []
+
+# Her ortak gen için test yapalım
+for gene in common_genes:
+    # İlgili satırı al
+    expr_cluster2 = NK_commons_expr_cluster2[NK_commons_expr_cluster2['genes'] == gene].iloc[:, 1:].values.flatten()
+    expr_cluster3 = NK_commons_expr_cluster3[NK_commons_expr_cluster3['genes'] == gene].iloc[:, 1:].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results.append({'gene': gene, 'U_statistic': stat, 'p_value': p})
+
+# Sonuçları DataFrame’e çevir
+results_df = pd.DataFrame(results)
+
+# İsteğe bağlı: p-değerine göre sırala
+results_df = results_df.sort_values('p_value')
+
+# İlk 5 sonucu göster
+print(results_df.head())
+
+# FDR düzeltmesi (Benjamini-Hochberg yöntemi)
+_, adj_pvals, _, _ = multipletests(results_df['p_value'], method='fdr_bh')
+
+# Yeni sütun olarak ekle
+results_df['adj_p_value'] = adj_pvals
+
+# adj_p_value'a göre sırala
+results_df = results_df.sort_values('adj_p_value')
+
+# Sonuçları göster
+print(results_df.head())
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results.xlsx", index=False)
+
+######################
+
+
+###########
+#check ediyorum arada baska seyleri::
+
+print(NK_cluster2_expr.shape[0])
+print(NK_cluster3_expr.shape[0])
+
+######
+
+# Dosya yolu
+file_path = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/Aggregated_log2Exp_NK.xlsx"
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı kontrol et
+print(df.head())
+
+##########
+
+
+#########
+###cluster 2 icin:
+
+from scipy.stats import mannwhitneyu
+
+# Seçilen genler için her birinde test yap
+results = {}
+for gene in selected_genes:
+    # Genin ekspresyon değerlerini al
+    expr_cluster2 = df[df["genes"] == gene][cluster_2_libraries].values.flatten()
+    expr_cluster3 = df[df["genes"] == gene][cluster_3_libraries].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p_value = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results[gene] = {
+        "statistic": stat,
+        "p_value": p_value,
+        "significant": p_value < 0.05  # 0.05 eşik değeri
+    }
+
+# Sonuçları DataFrame'e çevir
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+#results_df.to_csv("mannwhitney_results.csv", index=False)
+#results_df.to_excel("mannwhitney_results.xlsx", index=False, sheet_name="Test_Results")
+#print("Sonuçlar 'mannwhitney_results.csv' olarak kaydedildi!")
+
+# Gen isimlerini indeksten sütuna al
+results_df = results_df.reset_index().rename(columns={'index': 'Gene'})
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results_with_genes.xlsx", index=False)
+
+###########
+
+#########
+###cluster 3 icin:
+
+from scipy.stats import mannwhitneyu
+
+# Seçilen genler için her birinde test yap
+results = {}
+for gene in selected_genes_3:
+    # Genin ekspresyon değerlerini al
+    expr_cluster2 = df[df["genes"] == gene][cluster_2_libraries].values.flatten()
+    expr_cluster3 = df[df["genes"] == gene][cluster_3_libraries].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p_value = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results[gene] = {
+        "statistic": stat,
+        "p_value": p_value,
+        "significant": p_value < 0.05  # 0.05 eşik değeri
+    }
+
+# Sonuçları DataFrame'e çevir
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+#results_df.to_csv("mannwhitney_results.csv", index=False)
+#results_df.to_excel("mannwhitney_results.xlsx", index=False, sheet_name="Test_Results")
+#print("Sonuçlar 'mannwhitney_results.csv' olarak kaydedildi!")
+
+# Gen isimlerini indeksten sütuna al
+results_df = results_df.reset_index().rename(columns={'index': 'Gene'})
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results_with_genes.xlsx", index=False)
