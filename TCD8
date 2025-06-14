@@ -1,0 +1,477 @@
+
+# Dosya yolu
+file_path = "/Users/lemannur/Desktop/clusters_gene_expression_summary/TCD8_gene_comparison.xlsx"
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı göster
+print(df.head())
+#############
+
+#############
+# 1. Category sütunundaki benzersiz değerleri bul
+categories = df['Category'].unique()
+print("Categories:", categories)
+
+# Common kategorisine ait genleri al
+TCD8_commons = df[df['Category'] == 'Common']
+
+# Only_Cluster_2 kategorisine ait genleri al
+TCD8_cluster2 = df[df['Category'] == 'Only_Cluster_2']
+
+# Only_Cluster_3 kategorisine ait genleri al
+TCD8_cluster3 = df[df['Category'] == 'Only_Cluster_3']
+
+print("TCD8_commons length:", len(TCD8_commons))
+print("TCD8_cluster2 length:", len(TCD8_cluster2))
+print("TCD8_cluster3 length:", len(TCD8_cluster3))
+##############
+
+
+# Dosya yolları
+file_path_3 = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered/filtered_TCD8_cluster_3_stats.xlsx"
+file_path_2 = "/Users/lemannur/Desktop/clusters_gene_statistics_filtered/filtered_TCD8_cluster_2_stats.xlsx"
+# Excel dosyalarını oku ve isimlerini koruyarak DataFrame olarak ata
+filtered_TCD8_cluster_3_stats = pd.read_excel(file_path_3)
+filtered_TCD8_cluster_2_stats = pd.read_excel(file_path_2)
+
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("Cluster 3 Stats Preview:")
+print(filtered_TCD8_cluster_3_stats.head())
+print("\nCluster 2 Stats Preview:")
+print(filtered_TCD8_cluster_2_stats.head())
+
+
+##################
+
+TCD8_cluster2 = TCD8_cluster2.merge(
+    filtered_TCD8_cluster_2_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+)
+
+TCD8_cluster3 = TCD8_cluster3.merge(
+    filtered_TCD8_cluster_3_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+)
+
+print(TCD8_cluster2.columns)
+print(TCD8_cluster3.columns)
+
+######################
+
+# Önce Cluster 2'den mean ve median ekleyelim
+TCD8_commons = TCD8_commons.merge(
+    filtered_TCD8_cluster_2_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+).rename(columns={
+    'mean_expression': 'mean_expression_cluster2',
+    'median_expression': 'median_expression_cluster2'
+})
+
+# 'genes' sütunu merge'den geldiği için tekrar eden sütunu silelim
+TCD8_commons.drop(columns=['genes'], inplace=True)
+
+###################
+
+# Şimdi Cluster 3'ten mean ve median ekleyelim
+TCD8_commons = TCD8_commons.merge(
+    filtered_TCD8_cluster_3_stats[['genes', 'mean_expression', 'median_expression']],
+    left_on='Gene', right_on='genes',
+    how='left'
+).rename(columns={
+    'mean_expression': 'mean_expression_cluster3',
+    'median_expression': 'median_expression_cluster3'
+})
+
+# Yine gereksiz 'genes' sütununu kaldıralım
+TCD8_commons.drop(columns=['genes'], inplace=True)
+print(TCD8_commons.columns)
+
+#########################
+
+# Mean expression değerlerinin maksimum ve minimumunu yazdır
+print("Mean expression cluster2 (max):", TCD8_cluster2['mean_expression'].max())
+print("Mean expression cluster2 (min):", TCD8_cluster2['mean_expression'].min())
+
+# Median expression değerlerinin maksimum ve minimumunu yazdır
+print("Median expression cluster2 (max):", TCD8_cluster2['median_expression'].max())
+print("Median expression cluster2 (min):", TCD8_cluster2['median_expression'].min())
+
+# Mean expression değerlerinin maksimum ve minimumunu yazdır
+print("Mean expression cluster 3 (max):", TCD8_cluster3['mean_expression'].max())
+print("Mean expression cluster 3 (min):", TCD8_cluster3['mean_expression'].min())
+
+# Median expression değerlerinin maksimum ve minimumunu yazdır
+print("Median expression cluster 3 (max):", TCD8_cluster3['median_expression'].max())
+print("Median expression cluster 3 (min):", TCD8_cluster3['median_expression'].min())
+
+###################
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Güncel verilerle DataFrame oluşturma
+data = {
+    "Source": [
+        "TCD8_cluster2",
+        "TCD8_cluster3",
+        "TCD8_commons (cluster2)",
+        "TCD8_commons (cluster3)"
+    ],
+    # Mean değerleri
+    "Mean_Min": [0.1095022957477381, 0.1124563827250402, 0.1095022957477381, 0.1124563827250402],
+    "Mean_Max": [1.078518467525223, 1.998534580943476, 1.078518467525223, 1.998534580943476],
+    # Median değerleri
+    "Median_Min": [0.0768980974606629, 0.095270104297601, 0.0768980974606629, 0.095270104297601],
+    "Median_Max": [1.03409174140185, 2.22828398046648, 1.03409174140185, 2.22828398046648]
+}
+
+df = pd.DataFrame(data)
+
+# Sonucu göster
+print(df)
+
+# Bar plot
+x = range(len(df))
+width = 0.35
+
+plt.figure(figsize=(10, 6))
+plt.bar([i - width/2 for i in x], df["Mean_Min"], width=width, label='Mean Min')
+plt.bar([i + width/2 for i in x], df["Mean_Max"], width=width, label='Mean Max')
+
+plt.xticks(ticks=x, labels=df["Source"], rotation=20)
+plt.ylabel("Mean Expression")
+plt.title("Min and Max Mean Expression per Group - TCD8")
+plt.legend()
+plt.tight_layout()
+plt.show()
+##########################
+
+# TCD8_cluster2 içindeki mean_expression sütununun ortalaması
+mean_TCD8_cluster2 = TCD8_cluster2['mean_expression'].mean()
+print("Mean of TCD8_cluster2:", mean_TCD8_cluster2)
+
+# TCD8_cluster3 içindeki mean_expression sütununun ortalaması
+mean_TCD8_cluster3 = TCD8_cluster3['mean_expression'].mean()
+print("Mean of TCD8_cluster3:", mean_TCD8_cluster3)
+
+# TCD8_commons içindeki mean_expression_cluster2 ve mean_expression_cluster3 ortalamaları
+mean_TCD8_common_cluster2 = TCD8_commons['mean_expression_cluster2'].mean()
+mean_TCD8_common_cluster3 = TCD8_commons['mean_expression_cluster3'].mean()
+print("Mean of TCD8_commons (cluster2):", mean_TCD8_common_cluster2)
+print("Mean of TCD8_commons (cluster3):", mean_TCD8_common_cluster3)
+
+# TCD8_cluster2 içindeki median_expression sütununun ortalaması
+median_TCD8_cluster2 = TCD8_cluster2['median_expression'].mean()
+print("Median (mean value) of TCD8_cluster2:", median_TCD8_cluster2)
+
+# TCD8_cluster3 içindeki median_expression sütununun ortalaması
+median_TCD8_cluster3 = TCD8_cluster3['median_expression'].mean()
+print("Median (mean value) of TCD8_cluster3:", median_TCD8_cluster3)
+
+# TCD8_commons içindeki median_expression_cluster2 ve median_expression_cluster3 ortalamaları
+median_TCD8_common_cluster2 = TCD8_commons['median_expression_cluster2'].mean()
+median_TCD8_common_cluster3 = TCD8_commons['median_expression_cluster3'].mean()
+print("Median (mean value) of TCD8_commons (cluster2):", median_TCD8_common_cluster2)
+print("Median (mean value) of TCD8_commons (cluster3):", median_TCD8_common_cluster3)
+# TCD8_cluster2
+std_mean_TCD8_cluster2 = TCD8_cluster2['mean_expression'].std()
+std_median_TCD8_cluster2 = TCD8_cluster2['median_expression'].std()
+
+# TCD8_cluster3
+std_mean_TCD8_cluster3 = TCD8_cluster3['mean_expression'].std()
+std_median_TCD8_cluster3 = TCD8_cluster3['median_expression'].std()
+
+# TCD8_commons (hem cluster2 hem cluster3 değerleri)
+std_mean_TCD8_common_cluster2 = TCD8_commons['mean_expression_cluster2'].std()
+std_median_TCD8_common_cluster2 = TCD8_commons['median_expression_cluster2'].std()
+
+std_mean_TCD8_common_cluster3 = TCD8_commons['mean_expression_cluster3'].std()
+std_median_TCD8_common_cluster3 = TCD8_commons['median_expression_cluster3'].std()
+
+# Sonuçları yazdır
+print("STD - TCD8_cluster2 | Mean:", std_mean_TCD8_cluster2, "| Median:", std_median_TCD8_cluster2)
+print("STD - TCD8_cluster3 | Mean:", std_mean_TCD8_cluster3, "| Median:", std_median_TCD8_cluster3)
+print("STD - TCD8_commons (cluster2) | Mean:", std_mean_TCD8_common_cluster2, "| Median:", std_median_TCD8_common_cluster2)
+print("STD - TCD8_commons (cluster3) | Mean:", std_mean_TCD8_common_cluster3, "| Median:", std_median_TCD8_common_cluster3)
+#############
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+data = {
+    'Metric': ['Mean', 'Mean', 'Mean', 'Mean',
+               'Median', 'Median', 'Median', 'Median',
+               'STD Mean', 'STD Mean', 'STD Mean', 'STD Mean',
+               'STD Median', 'STD Median', 'STD Median', 'STD Median'],
+    'Group': ['TCD8_cluster2', 'TCD8_cluster3', 'TCD8_commons_c2', 'TCD8_commons_c3'] * 4,
+    'Value': [
+        # Mean values
+        0.393671507900052, 0.4188355067454002, 1.008669351077037, 1.001925243098859,
+        # Median values
+        0.37505455482643285, 0.40928350352605664, 1.008448063218697, 0.9992076026526746,
+        # STD of Mean
+        0.15616649103954364, 0.19158207119871734, 0.6537610035927512, 0.667874260642863,
+        # STD of Median
+        0.15877878443516485, 0.19738165647398617, 0.66115357296765, 0.6735388329504305
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# Görselleştirme: Barplot
+plt.figure(figsize=(12, 6))
+sns.barplot(data=df, x='Group', y='Value', hue='Metric')
+plt.title('TCD8 Feature Statistics by Cluster')
+plt.ylabel('Value')
+plt.ylim(0, 1.5)
+plt.legend(title='Metric')
+plt.tight_layout()
+plt.show()
+
+##############
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Güncellenmiş veri
+data = {
+    "Group": [
+        "TCD8_cluster2", "TCD8_cluster3",
+        "TCD8_commons (cluster2)", "TCD8_commons (cluster3)"
+    ],
+    "Mean": [
+        0.393671507900052, 0.4188355067454002,
+        1.008669351077037, 1.001925243098859
+    ],
+    "Median": [
+        0.37505455482643285, 0.40928350352605664,
+        1.008448063218697, 0.9992076026526746
+    ],
+    "STD (Mean)": [
+        0.15616649103954364, 0.19158207119871734,
+        0.6537610035927512, 0.667874260642863
+    ],
+    "STD (Median)": [
+        0.15877878443516485, 0.19738165647398617,
+        0.66115357296765, 0.6735388329504305
+    ]
+}
+
+df = pd.DataFrame(data)
+print(df)
+
+# Grafik çizimi
+plt.figure(figsize=(12, 6))
+x = range(len(df))
+
+# Ortalama değerler (Mean ve Median)
+plt.bar([i - 0.2 for i in x], df["Mean"], width=0.2, label="Mean", color="skyblue")
+plt.bar([i for i in x], df["Median"], width=0.2, label="Median", color="lightgreen")
+
+# Hata barları (standart sapma)
+plt.errorbar([i - 0.2 for i in x], df["Mean"], yerr=df["STD (Mean)"], fmt='o', color='blue', capsize=5)
+plt.errorbar([i for i in x], df["Median"], yerr=df["STD (Median)"], fmt='o', color='green', capsize=5)
+
+# Etiketler ve düzenlemeler
+plt.xticks(ticks=x, labels=df["Group"], rotation=15)
+plt.ylabel("Expression Level")
+plt.title("Mean and Median Expression Levels with Standard Deviation (TCD8)")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+##############################
+
+
+
+# Dosya yolları
+file_path_cluster2 = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/TCD8_cluster_2.xlsx"
+file_path_cluster3 = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/TCD8_cluster_3.xlsx"
+# Excel dosyalarını oku
+TCD8_cluster2_raw = pd.read_excel(file_path_cluster2)
+TCD8_cluster3_raw = pd.read_excel(file_path_cluster3)
+###############
+
+# Kontrol amaçlı ilk birkaç satırı yazdır
+print("TCD8_cluster2_raw preview:")
+print(TCD8_cluster2_raw.head())
+
+print("\nTCD8_cluster3_raw preview:")
+print(TCD8_cluster3_raw.head())
+
+####################
+# TCD8_cluster2 içindeki gen isimlerini liste olarak al
+selected_genes = TCD8_cluster2['Gene'].tolist()
+len(selected_genes)
+
+# Bu genlere karşılık gelen satırları TCD8_cluster2_raw içinden filtrele
+TCD8_cluster2_expr = TCD8_cluster2_raw[TCD8_cluster2_raw['genes'].isin(selected_genes)]
+
+# İlk birkaç satırı göster
+print(TCD8_cluster2_expr.head())
+
+##################
+##############
+# TCD8_cluster3 içindeki gen isimlerini liste olarak al
+selected_genes_3 = TCD8_cluster3['Gene'].tolist()
+len(selected_genes_3)
+
+# Bu genlere karşılık gelen satırları TCD8_cluster3_raw içinden filtrele
+TCD8_cluster3_expr = TCD8_cluster3_raw[TCD8_cluster3_raw['genes'].isin(selected_genes_3)]
+
+# İlk birkaç satırı göster
+print(TCD8_cluster3_expr.head())
+
+####################
+
+# TCD8_commons içindeki gen isimlerini liste olarak al
+common_genes = TCD8_commons['Gene'].tolist()
+
+# Bu genlere karşılık gelen satırları TCD8_cluster2_raw içinden filtrele
+TCD8_commons_expr_cluster2 = TCD8_cluster2_raw[TCD8_cluster2_raw['genes'].isin(common_genes)]
+
+# İlk birkaç satırı yazdır
+print(TCD8_commons_expr_cluster2.head())
+
+#############
+# Bu genlere karşılık gelen satırları TCD8_cluster3_raw içinden filtrele
+TCD8_commons_expr_cluster3 = TCD8_cluster3_raw[TCD8_cluster3_raw['genes'].isin(common_genes)]
+
+# İlk birkaç satırı yazdır
+print(TCD8_commons_expr_cluster3.head())
+
+#######################
+
+# Ortak genleri alalım
+common_genes = set(TCD8_commons_expr_cluster2['genes']).intersection(set(TCD8_commons_expr_cluster3['genes']))
+
+# Sonuçları saklamak için liste
+results = []
+
+# Her ortak gen için test yapalım
+for gene in common_genes:
+    # İlgili satırı al
+    expr_cluster2 = TCD8_commons_expr_cluster2[TCD8_commons_expr_cluster2['genes'] == gene].iloc[:, 1:].values.flatten()
+    expr_cluster3 = TCD8_commons_expr_cluster3[TCD8_commons_expr_cluster3['genes'] == gene].iloc[:, 1:].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results.append({'gene': gene, 'U_statistic': stat, 'p_value': p})
+
+# Sonuçları DataFrame’e çevir
+results_df = pd.DataFrame(results)
+
+# İsteğe bağlı: p-değerine göre sırala
+results_df = results_df.sort_values('p_value')
+
+# İlk 5 sonucu göster
+print(results_df.head())
+
+# FDR düzeltmesi (Benjamini-Hochberg yöntemi)
+_, adj_pvals, _, _ = multipletests(results_df['p_value'], method='fdr_bh')
+
+# Yeni sütun olarak ekle
+results_df['adj_p_value'] = adj_pvals
+
+# adj_p_value'a göre sırala
+results_df = results_df.sort_values('adj_p_value')
+
+# Sonuçları göster
+print(results_df.head())
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results.xlsx", index=False)
+
+print(TCD8_cluster2_expr.shape[0])
+print(TCD8_cluster3_expr.shape[0])
+##################
+
+
+# Dosya yolu
+file_path = "/Users/lemannur/Desktop/Team EIT Modeling Article : Dry Lab/data&cluster information/Aggregated_log2Exp_TCD8.xlsx"
+
+# Excel dosyasını oku
+df = pd.read_excel(file_path)
+
+# İlk birkaç satırı kontrol et
+print(df.head())
+
+##########
+
+
+# Seçilen genler için her birinde test yap
+results = {}
+for gene in selected_genes:
+    # Genin ekspresyon değerlerini al
+    expr_cluster2 = df[df["genes"] == gene][cluster_2_libraries].values.flatten()
+    expr_cluster3 = df[df["genes"] == gene][cluster_3_libraries].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p_value = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results[gene] = {
+        "statistic": stat,
+        "p_value": p_value,
+        "significant": p_value < 0.05  # 0.05 eşik değeri
+    }
+
+# Sonuçları DataFrame'e çevir
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+#results_df.to_csv("mannwhitney_results.csv", index=False)
+#results_df.to_excel("mannwhitney_results.xlsx", index=False, sheet_name="Test_Results")
+#print("Sonuçlar 'mannwhitney_results.csv' olarak kaydedildi!")
+
+# Gen isimlerini indeksten sütuna al
+results_df = results_df.reset_index().rename(columns={'index': 'Gene'})
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results_with_genes.xlsx", index=False)
+
+#####################
+
+#########
+###cluster 3 icin:
+
+from scipy.stats import mannwhitneyu
+
+# Seçilen genler için her birinde test yap
+results = {}
+for gene in selected_genes_3:
+    # Genin ekspresyon değerlerini al
+    expr_cluster2 = df[df["genes"] == gene][cluster_2_libraries].values.flatten()
+    expr_cluster3 = df[df["genes"] == gene][cluster_3_libraries].values.flatten()
+
+    # Mann-Whitney U testi
+    stat, p_value = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='two-sided')
+
+    # Sonuçları kaydet
+    results[gene] = {
+        "statistic": stat,
+        "p_value": p_value,
+        "significant": p_value < 0.05  # 0.05 eşik değeri
+    }
+
+# Sonuçları DataFrame'e çevir
+results_df = pd.DataFrame(results).T
+print(results_df)
+
+#results_df.to_csv("mannwhitney_results.csv", index=False)
+#results_df.to_excel("mannwhitney_results.xlsx", index=False, sheet_name="Test_Results")
+#print("Sonuçlar 'mannwhitney_results.csv' olarak kaydedildi!")
+
+# Gen isimlerini indeksten sütuna al
+results_df = results_df.reset_index().rename(columns={'index': 'Gene'})
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_results_with_genes.xlsx", index=False)
+
+##########
