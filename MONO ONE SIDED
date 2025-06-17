@@ -1,0 +1,100 @@
+#### logFC eklenmiş hali
+import numpy as np
+import pandas as pd
+from scipy.stats import mannwhitneyu
+from statsmodels.stats.multitest import multipletests
+
+# Ortak genleri alalım
+common_genes = set(mono_commons_expr_cluster2['genes']).intersection(set(mono_commons_expr_cluster3['genes']))
+
+# Sonuçları saklamak için liste
+results = []
+
+# Her ortak gen için test yapalım
+for gene in common_genes:
+    expr_cluster2 = mono_commons_expr_cluster2[mono_commons_expr_cluster2['genes'] == gene].iloc[:, 1:].values.flatten()
+    expr_cluster3 = mono_commons_expr_cluster3[mono_commons_expr_cluster3['genes'] == gene].iloc[:, 1:].values.flatten()
+
+    # Ortalama ifadeleri al
+    mean_cluster2 = np.mean(expr_cluster2)
+    mean_cluster3 = np.mean(expr_cluster3)
+
+    # Fold change ve log2FC hesapla (küçük sabit ekleyerek)
+    epsilon = 1e-6
+    fc = (mean_cluster2 + epsilon) / (mean_cluster3 + epsilon)
+    logfc = np.log2(fc)
+
+    # Tek taraflı: Cluster 2 > Cluster 3
+    stat, p = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='greater')
+
+    results.append({
+        'gene': gene,
+        'U_statistic': stat,
+        'p_value': p,
+        'mean_cluster2': mean_cluster2,
+        'mean_cluster3': mean_cluster3,
+        'fold_change': fc,
+        'log2FC': logfc
+    })
+
+# DataFrame'e çevir ve sırala
+results_df = pd.DataFrame(results)
+results_df = results_df.sort_values('p_value')
+
+# FDR düzeltmesi
+_, adj_pvals, _, _ = multipletests(results_df['p_value'], method='fdr_bh')
+results_df['adj_p_value'] = adj_pvals
+
+# Excel'e kaydet
+results_df.to_excel("mannwhitney_mono_cluster2_greater_with_logFC.xlsx", index=False)
+
+
+# fold change eklenmiş hali
+import numpy as np
+import pandas as pd
+from scipy.stats import mannwhitneyu
+from statsmodels.stats.multitest import multipletests
+
+# Ortak genleri alalım
+common_genes = set(mono_commons_expr_cluster2['genes']).intersection(set(mono_commons_expr_cluster3['genes']))
+
+# Sonuçları saklamak için liste
+results = []
+
+# Her ortak gen için test yapalım
+for gene in common_genes:
+    expr_cluster2 = mono_commons_expr_cluster2[mono_commons_expr_cluster2['genes'] == gene].iloc[:, 1:].values.flatten()
+    expr_cluster3 = mono_commons_expr_cluster3[mono_commons_expr_cluster3['genes'] == gene].iloc[:, 1:].values.flatten()
+
+    # Ortalama ifadeleri hesapla
+    mean_cluster2 = np.mean(expr_cluster2)
+    mean_cluster3 = np.mean(expr_cluster3)
+
+    # Fold change ve log2FC hesapla (küçük sabit ile)
+    epsilon = 1e-6
+    fc = (mean_cluster3 + epsilon) / (mean_cluster2 + epsilon)  # çünkü cluster3 > cluster2
+    logfc = np.log2(fc)
+
+    # Mann-Whitney U testi (tek taraflı: cluster 3 > cluster 2)
+    stat, p = mannwhitneyu(expr_cluster2, expr_cluster3, alternative='less')
+
+    results.append({
+        'gene': gene,
+        'U_statistic': stat,
+        'p_value': p,
+        'mean_cluster2': mean_cluster2,
+        'mean_cluster3': mean_cluster3,
+        'fold_change': fc,
+        'log2FC': logfc
+    })
+
+# DataFrame'e çevir
+results_df = pd.DataFrame(results)
+results_df = results_df.sort_values('p_value')
+
+# FDR düzeltmesi
+_, adj_pvals, _, _ = multipletests(results_df['p_value'], method='fdr_bh')
+results_df['adj_p_value'] = adj_pvals
+
+# Kaydet
+results_df.to_excel("mannwhitney_mono_cluster3_greater_with_logFC.xlsx", index=False)
