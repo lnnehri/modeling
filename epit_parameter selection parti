@@ -1,0 +1,622 @@
+pip install goatools
+
+from goatools.obo_parser import GODag
+from goatools.associations import read_ncbi_gene2go
+from goatools.go_enrichment import GOEnrichmentStudy
+
+file_path = "/Users/lemannur/Downloads/EpiT_core_proteins_cluster_3_combined_GO_biological_analysis.txt"
+
+# İlk olarak tablo başlığının satır numarasını tespit edelim
+with open(file_path, "r") as f:
+    lines = f.readlines()
+
+# Başlığı bul: "GO biological process complete" ile başlayan satır
+for i, line in enumerate(lines):
+    if line.startswith("GO biological process complete"):
+        start_line = i
+        break
+
+# Bu satırdan itibaren pandas ile oku
+import pandas as pd
+
+df = pd.read_csv(file_path, sep="\t", skiprows=start_line)
+print(df.head())
+
+
+print(df.columns)
+
+#epit icin analizi yapiyorum once
+import pandas as pd
+
+# Dosya yolunu belirt
+file_path = "/Users/lemannur/Desktop/epiT_p<0.05 genes combined cluster 3 (commons and only in cluster 3), with foldcgange and log2.xlsx"
+# Excel dosyasını oku
+df_cluster_3 = pd.read_excel(file_path)
+# İlk birkaç satırı gör
+print(df_cluster_3.head())
+
+#cluster 2 icin:
+# Dosya yolunu belirt
+file_path = "/Users/lemannur/Desktop/epiT_p<0.05 genes cluster 2 with foldcgange and log2.xlsx"
+# Excel dosyasını oku
+df_cluster_2 = pd.read_excel(file_path)
+# İlk birkaç satırı gör
+print(df_cluster_2.head())
+
+#simdi epit documentinde boldladigim listelerdeki genleri cekiyorum skorlama icin
+
+epit_cluster_2_exocytosis = ['ANXA1', 'ARL8B', 'CCL3', 'FBXO45', 'GIT1', 'ITGB2', 'LYN', 'PLEK', 'SNF8']
+
+epit_cluster_3_exocytosis = ['ARHGAP44', 'ATP9A', 'CHMP2A', 'EXOC7', 'LIN7B', 'MICAL1', 'RAB11B',
+                             'RAB40C', 'SDC1', 'SMPD3', 'SRCIN1', 'STXBP2', 'VAMP2']
+
+epit_cluster_2_fatty_acid_oxidation = ['PEX5']
+
+epit_cluster_3_fatty_acid_oxidation = ['ACACB', 'ACADS', 'ACOX1', 'CRAT', 'ECH1', 'HADH', 'HADHB']
+
+epit_cluster_2_angiogenesis = []
+
+epit_cluster_3_angiogenesis = ['HSPB1', 'MAPK3', 'PRKD2', 'RHOC']
+
+epit_cluster_2_ros_metabolism = ['CLEC7A', 'ITGB2', 'NCF2', 'PRDX4', 'TYROBP']
+
+epit_cluster_3_ros_metabolism = ['ACOX1', 'AKR1C3', 'DCXR', 'DUOX2', 'DUOXA2', 'HDAC6', 'MB', 'MPV17L',
+                                 'NOXA1', 'NOXO1', 'PTK2B', 'RIPK3', 'SIRT5', 'UCP2', 'ZC3H12A', 'ZNF205']
+
+epit_cluster_2_lipid_biosynthesis = ['ACSM1', 'AJUBA', 'APOE', 'CYB5R2', 'DHRS9', 'HEXB',
+                                     'IGFBP7', 'ORMDL1', 'SLC30A5', 'ST8SIA4', 'TRIB3']
+
+epit_cluster_3_lipid_biosynthesis = ['ACACB', 'ACOX1', 'ACSM3', 'ACSS2', 'AKR1C3', 'B4GALT4', 'BCKDK',
+                                     'CLN3', 'CYP51A1', 'DHCR24', 'DHRS11', 'DPM3', 'FAXDC2', 'FDFT1',
+                                     'FITM1', 'GBA2', 'GGT1', 'HMGCL', 'HMGCS2', 'HSD17B11', 'HSD17B8',
+                                     'IDH1', 'INPP5K', 'LTC4S', 'MOGAT3', 'MVD', 'NR1H3', 'NR5A2', 'PBX1',
+                                     'PCK2', 'PGAP3', 'PIGZ', 'PLA2G4F', 'POR', 'PRKD2', 'SCAP', 'SDR42E2',
+                                     'SLC44A4', 'SMPD2', 'TECR']
+
+epit_cluster_2_ca_signaling = ['CCL3', 'CCL4', 'CD4', 'CLEC7A', 'CXCL8', 'ORAI1', 'PLEK', 'PRNP']
+
+epit_cluster_3_ca_signaling = ['CALM2', 'CCR10', 'CCR6', 'CCRL2', 'DEFB1', 'HPCA', 'HRC', 'MAPK7', 'NR5A2', 'TRPV1']
+
+epit_cluster_2_gpcr_activity = ['TAPT1']
+
+epit_cluster_3_gpcr_activity = ['CCR10', 'CCR6', 'CCRL2', 'INPP5K', 'LTB4R', 'PTGER4', 'TACR2', 'VIPR1']
+
+epit_cluster_2_mapk = ['DUSP14', 'DUSP3', 'DUSP7', 'HSPA8', 'RASGRP3', 'RELB']
+
+epit_cluster_3_mapk = ['ARRB1', 'GADD45G', 'HSPB1', 'MAP2K6', 'MAPK13', 'MAPK3', 'MAPK7',
+                       'MAPK8IP3', 'PRKACB', 'STMN1']
+
+epit_cluster_2_response_to_nutrient = ['CD4', 'ITGA2']
+
+epit_cluster_3_response_to_nutrient = ['ACACB', 'AKR1C3', 'CEBPA', 'GAS6', 'HMGCS2', 'MT-CYB',
+                                       'POR', 'SCAP', 'SPP1']
+
+epit_cluster_2_lipid_metabolism = ['AHR', 'ALOX5AP', 'CSNK2A2', 'DDHD1', 'G0S2', 'GLA', 'HEXB', 'MED27',
+                                   'MED8', 'ORMDL1', 'OSBPL10', 'PLEKHA3', 'PLEKHA8', 'TGS1', 'TRIB3', 'TXNRD1']
+
+epit_cluster_3_lipid_metabolism = ['ABCC3', 'ACACB', 'ACADS', 'ACOT11', 'ACOT2', 'ACOX1', 'ACSF2', 'ACSM3',
+                                   'AKR1C3', 'BDH1', 'CRAT', 'CYP2J2', 'CYP51A1', 'DHCR24', 'EPHX2', 'FAAH',
+                                   'FABP6', 'FDFT1', 'FITM1', 'GBA2', 'GDPD3', 'GGT1', 'GPD1L', 'HADH', 'HADHB',
+                                   'HMGCL', 'HMGCS2', 'HSD11B2', 'HSD17B11', 'HSD17B8', 'INPP5K', 'LTC4S', 'MOGAT3',
+                                   'MVD', 'NEU4', 'NR1H3', 'NUDT7', 'PCCA', 'PHYH', 'PLA2G4F', 'PLD3', 'PLPP1',
+                                   'PNPLA7', 'PRKACB', 'PRKD2', 'SCAP', 'SLC44A4', 'SLC51B', 'SMPD2', 'SMPD3', 'TECR']
+
+epit_cluster_2_aa_metabolism = ['ODC1', 'SLC3A2', 'SLC7A5', 'TXNRD1']
+
+epit_cluster_3_aa_metabolism = ['ALDH6A1', 'AZIN2', 'BCAT2', 'BCKDK', 'CRYM', 'DUOX2', 'ETHE1', 'GPT',
+                                'SLC6A7', 'TSTD1']
+
+############################
+
+#gorsel denemesi
+# Cluster 2 için ilgili genleri filtrele
+df2_subset = df_cluster_2[df_cluster_2['gene'].isin(epit_cluster_2_lipid_biosynthesis)]
+mean_log2fc_2 = df2_subset['log2FC'].mean()
+
+# Cluster 3 için ilgili genleri filtrele
+df3_subset = df_cluster_3[df_cluster_3['gene'].isin(epit_cluster_3_lipid_biosynthesis)]
+mean_log2fc_3 = df3_subset['log2FC'].mean()
+
+# Heatmap için dataframe oluştur
+heatmap_df = pd.DataFrame({
+    'Cluster 2': [mean_log2fc_2],
+    'Cluster 3': [mean_log2fc_3]
+}, index=['Lipid Biosynthesis'])
+
+# Heatmap çiz
+plt.figure(figsize=(5, 3))
+sns.heatmap(heatmap_df, annot=True, cmap='coolwarm', center=0, fmt=".2f")
+plt.title('Average log2FC - Lipid Biosynthesis Pathway')
+plt.tight_layout()
+plt.show()
+#cok kotu oldu
+
+###########################
+
+#2. deneme
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Lipid biosynthesis pathway genleri (birleşik, tüm genler)
+lipid_biosynthesis_genes = list(set(epit_cluster_2_lipid_biosynthesis + epit_cluster_3_lipid_biosynthesis))
+
+# Cluster 2 ve 3'te log2FC'leri içeren alt tablolar
+df2_subset = df_cluster_2[df_cluster_2['gene'].isin(lipid_biosynthesis_genes)][['gene', 'log2FC']]
+df3_subset = df_cluster_3[df_cluster_3['gene'].isin(lipid_biosynthesis_genes)][['gene', 'log2FC']]
+
+# İsimleri düzenle
+df2_subset = df2_subset.rename(columns={'log2FC': 'Cluster 2'})
+df3_subset = df3_subset.rename(columns={'log2FC': 'Cluster 3'})
+
+# Merge (birleştir)
+merged_df = pd.merge(df2_subset, df3_subset, on='gene', how='outer').set_index('gene')
+
+# Heatmap çiz
+plt.figure(figsize=(8, max(4, len(merged_df) * 0.3)))  # gen sayısına göre yükseklik ayarlanır
+sns.heatmap(merged_df, annot=True, cmap='coolwarm', center=0, fmt=".2f", linewidths=0.5, linecolor='gray')
+plt.title('log2 Fold Change per Gene - Lipid Biosynthesis Pathway')
+plt.tight_layout()
+plt.show()
+
+###yukaridaki fena olmadigi icin tum hepsi icin aliyorum
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Cluster 2 ve 3 veri dosyalarının sütunları 'gene' ve 'log2FC' olarak varsayılıyor
+# Lütfen aşağıdaki listelerin tanımlı olduğundan emin ol
+
+# Tüm pathway isimleri
+pathway_names = [
+    "exocytosis",
+    "fatty_acid_oxidation",
+    "angiogenesis",
+    "ros_metabolism",
+    "lipid_biosynthesis",
+    "ca_signaling",
+    "gpcr_activity",
+    "mapk",
+    "response_to_nutrient",
+    "lipid_metabolism",
+    "aa_metabolism"
+]
+
+# Her pathway için heatmap çiz
+for pathway in pathway_names:
+    list_2 = globals().get(f"epit_cluster_2_{pathway}", [])
+    list_3 = globals().get(f"epit_cluster_3_{pathway}", [])
+
+    # Eğer her iki liste de boşsa atla
+    if not list_2 and not list_3:
+        continue
+
+    # Birleşik gen listesi
+    combined_genes = list(set(list_2 + list_3))
+
+    # Cluster 2 ve 3 için log2FC'leri filtrele
+    df2_subset = df_cluster_2[df_cluster_2['gene'].isin(combined_genes)][['gene', 'log2FC']]
+    df3_subset = df_cluster_3[df_cluster_3['gene'].isin(combined_genes)][['gene', 'log2FC']]
+
+    # İsimleri düzenle
+    df2_subset = df2_subset.rename(columns={'log2FC': 'Cluster 2'})
+    df3_subset = df3_subset.rename(columns={'log2FC': 'Cluster 3'})
+
+    # Merge (birleştir)
+    merged_df = pd.merge(df2_subset, df3_subset, on='gene', how='outer').set_index('gene')
+
+    # Eğer tamamen boşsa atla
+    if merged_df.empty:
+        continue
+
+    # Heatmap çiz
+    plt.figure(figsize=(8, max(4, len(merged_df) * 0.3)))
+    sns.heatmap(merged_df, annot=True, cmap='coolwarm', center=0, fmt=".2f",
+                linewidths=0.5, linecolor='gray')
+    plt.title(f'log2 Fold Change per Gene - {pathway.replace("_", " ").title()}')
+    plt.tight_layout()
+    plt.show()
+
+
+#################
+
+#simdi 2. clusterde baskin olan EPiTlere bakiyorum
+#bunlar dosyadaki italik olanlar
+# Senescence genleri
+epit_cluster_2_senescence = ['AGO2', 'ANXA5', 'BMP4', 'CDK6', 'CDKN2A', 'CTNNAL1', 'CXCL8', 'DUSP3',
+                              'IGF1R', 'IGFBP7', 'ING1', 'MTDH', 'NAMPT', 'NBN', 'PRKDC', 'PTRF',
+                              'SQSTM1', 'TCF3', 'TOPBP1', 'ZMAT3']
+
+epit_cluster_3_senescence = ['FOXA3', 'FOXO4', 'GADD45G', 'HMOX1', 'HSPB1', 'IDH1', 'MAP2K6',
+                              'MAPK13', 'SEPN1', 'SIRT6']
+
+# Mitochondrial genleri
+epit_cluster_2_mitochondrial = ['MPV17L2', 'MRPL15', 'MRPL3', 'MRPS10', 'MRPS27', 'MTIF2', 'TWNK', 'YARS2']
+
+epit_cluster_3_mitochondrial = ['FASTK', 'KAT8', 'MRPL28']
+
+epit_cluster_2_response_to_er_stress = [
+    'CANX', 'CXCL8', 'DERL1', 'DNAJB9', 'DNAJC3', 'GORASP2', 'HERPUD2', 'HSPA5',
+    'MAN1A1', 'NRBF2', 'PDIA6', 'SERP1', 'TBL2', 'TMEM117', 'TNFRSF10B', 'TRIB3',
+    'UBA5', 'UBQLN1'
+]
+
+epit_cluster_3_response_to_er_stress = [
+    'ANKS4B', 'ATF6B', 'DERL3', 'DNAJB2', 'FLOT1', 'NR1H3', 'PARP6', 'RNF186',
+    'RNF5', 'SRPX'
+]
+
+epit_cluster_2_cell_migration = [
+    'AGO2', 'AIF1', 'AJUBA', 'AMOTL2', 'ANXA1', 'APOE', 'BMP4', 'CCL18', 'CCL3', 'CCL4',
+    'CD47', 'CD81', 'CLEC7A', 'CNN2', 'CTTN', 'CXCL8', 'DPP4', 'DUSP3', 'EPS8', 'FAM83H',
+    'FBXO45', 'FMNL1', 'FOXC1', 'FRMD5', 'GRB10', 'HEXB', 'HSPA5', 'IGF1R', 'ITGA2',
+    'ITGB1BP1', 'ITGB2', 'ITGB8', 'KIF2A', 'LCP1', 'LRCH1', 'LYN', 'MAPK15', 'MET',
+    'MMP12', 'MMP9', 'NR2F2', 'NRP2', 'OVOL2', 'PEX5', 'PPIB', 'PTPN11', 'STK26',
+    'TGFBR3', 'TIRAP', 'TNFAIP3', 'WWC1', 'WWC2', 'WWC3'
+]
+
+epit_cluster_3_cell_migration = [
+    'ACE', 'ADTRP', 'BIN2', 'CCR10', 'CCR6', 'CCRL2', 'CD151', 'CLN3', 'CSF1R', 'DAPK2',
+    'DUSP22', 'FERMT3', 'FOXO4', 'GAS6', 'GPC3', 'HDAC6', 'HES1', 'HMOX1', 'HSPB1',
+    'LDLRAD4', 'LRP1', 'MAPK3', 'MYLK', 'PADI2', 'PFN1', 'PLXNA2', 'PPIA', 'PRKD2',
+    'PRR5L', 'PTGER4', 'PTK2B', 'RHOC', 'RIPK3', 'SDC1', 'SMIM22', 'SMPD3', 'SRCIN1',
+    'SUN2', 'TRIP6', 'ZC3H12A', 'ZEB2', 'ZNF580'
+]
+
+epit_cluster_2_proliferation = [
+    'AIF1', 'B4GALT7', 'BRCA2', 'CD47', 'CD81', 'CDK6', 'CDKN2A', 'CREG1', 'CXCL8',
+    'EPS8', 'FOSL1', 'IGF1R', 'IGFBP7', 'ING1', 'LST1', 'LYN', 'MXD4', 'NAMPT',
+    'OSM', 'TIPIN', 'TNFSF9'
+]
+
+epit_cluster_3_proliferation = [
+    'CD164', 'CDK10', 'CGREF1', 'CSF1R', 'DUSP22', 'FABP6', 'FOXO4', 'GAS6',
+    'LRP1', 'PTK2B', 'VIPR1'
+]
+
+epit_cluster_2_response_to_unfolded_protein = [
+    'BAG3', 'DNAJB9', 'DNAJC3', 'HSPA5', 'MTHFD2', 'NOP14', 'PDIA6', 'SERP1',
+    'SLC30A5', 'SLC7A5', 'SPCS1', 'SRPRB', 'XPOT'
+]
+
+epit_cluster_3_response_to_unfolded_protein = ['DCTN1']
+
+###pathway isimlerini aliyorum simdi tekrar bu italikler icin:
+cluster_2_pathways = [
+    "senescence",
+    "mitochondrial",
+    "response_to_er_stress",
+    "cell_migration",
+    "proliferation",
+    "response_to_unfolded_protein"
+]
+
+###########
+# #simdi ayni gorselleri cluster 2 de baskin olanlar icin aliyorum heatmapleri
+# Her pathway için heatmap çiz
+for pathway in cluster_2_pathways:
+    list_2 = globals().get(f"epit_cluster_2_{pathway}", [])
+    list_3 = globals().get(f"epit_cluster_3_{pathway}", [])
+
+    # Eğer her iki liste de boşsa atla
+    if not list_2 and not list_3:
+        continue
+
+    # Birleşik gen listesi
+    combined_genes = list(set(list_2 + list_3))
+
+    # Cluster 2 ve 3 için log2FC'leri filtrele
+    df2_subset = df_cluster_2[df_cluster_2['gene'].isin(combined_genes)][['gene', 'log2FC']]
+    df3_subset = df_cluster_3[df_cluster_3['gene'].isin(combined_genes)][['gene', 'log2FC']]
+
+    # İsimleri düzenle
+    df2_subset = df2_subset.rename(columns={'log2FC': 'Cluster 2'})
+    df3_subset = df3_subset.rename(columns={'log2FC': 'Cluster 3'})
+
+    # Merge (birleştir)
+    merged_df = pd.merge(df2_subset, df3_subset, on='gene', how='outer').set_index('gene')
+
+    # Eğer tamamen boşsa atla
+    if merged_df.empty:
+        continue
+
+    # Heatmap çiz
+    plt.figure(figsize=(8, max(4, len(merged_df) * 0.3)))
+    sns.heatmap(merged_df, annot=True, cmap='coolwarm', center=0, fmt=".2f",
+                linewidths=0.5, linecolor='gray')
+    plt.title(f'log2 Fold Change per Gene - {pathway.replace("_", " ").title()}')
+    plt.tight_layout()
+    plt.show()
+
+###########
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+##############
+
+
+####simdi dagilima uyuyorlar mi diye bir onrkele bakiyorum
+
+
+# İlgili log2FC değerlerini al
+logfc_values = df_cluster_3[df_cluster_3['gene'].isin(epit_cluster_3_exocytosis)]['log2FC'].dropna().values
+
+# Histogram + KDE çizimi
+plt.figure(figsize=(8, 4))
+sns.histplot(logfc_values, bins=10, kde=True, stat="density", color='steelblue')
+plt.title('log2FC Distribution - Cluster 3 Exocytosis Genes')
+plt.xlabel('log2FC')
+plt.ylabel('Density')
+plt.tight_layout()
+plt.show()
+
+# === DAĞILIM UYUM TESTLERİ ===
+
+# 1. Normal dağılım
+mu, std = stats.norm.fit(logfc_values)
+ks_norm = stats.kstest(logfc_values, 'norm', args=(mu, std))
+
+# 2. Log-normal dağılım
+shape, loc, scale = stats.lognorm.fit(logfc_values - min(logfc_values) + 0.01)  # pozitif kaydırma
+ks_lognorm = stats.kstest(logfc_values - min(logfc_values) + 0.01, 'lognorm', args=(shape, loc, scale))
+
+# 3. Gamma dağılımı
+a, loc_g, scale_g = stats.gamma.fit(logfc_values - min(logfc_values) + 0.01)
+ks_gamma = stats.kstest(logfc_values - min(logfc_values) + 0.01, 'gamma', args=(a, loc_g, scale_g))
+
+# Sonuçları yazdır
+print("Normal dağılım:      D=%.3f, p=%.3f" % ks_norm)
+print("Log-normal dağılım:  D=%.3f, p=%.3f" % ks_lognorm)
+print("Gamma dağılım:       D=%.3f, p=%.3f" % ks_gamma)
+
+
+######################
+
+# Pathway listeleri
+cluster_2_pathways = [
+    "senescence", "mitochondrial", "response_to_er_stress",
+    "cell_migration", "proliferation", "response_to_unfolded_protein"
+]
+
+cluster_3_pathways = [
+    "exocytosis", "fatty_acid_oxidation", "angiogenesis", "ros_metabolism",
+    "lipid_biosynthesis", "ca_signaling", "gpcr_activity", "mapk",
+    "response_to_nutrient", "lipid_metabolism", "aa_metabolism"
+]
+
+##########
+# Fonksiyon: dağılım analizi yap
+####### burada yukaridaki gen setlerindeki genler belrili dagilimlara uyuyor mu uymuyor mu diye bakiyorum
+
+
+def analyze_distribution(gene_list, df, cluster_label, pathway_name):
+    logfc_values = df[df['gene'].isin(gene_list)]['log2FC'].dropna().values
+
+    if len(logfc_values) < 3:
+        print(f"{cluster_label} - {pathway_name}: Not enough data.")
+        return
+
+    # Histogram + KDE
+    plt.figure(figsize=(8, 4))
+    sns.histplot(logfc_values, bins=10, kde=True, stat="density", color='steelblue')
+    plt.title(f'{cluster_label} - {pathway_name} - log2FC Distribution')
+    plt.xlabel('log2FC')
+    plt.ylabel('Density')
+    plt.tight_layout()
+    plt.show()
+
+    # Normal dağılım
+    mu, std = stats.norm.fit(logfc_values)
+    ks_norm = stats.kstest(logfc_values, 'norm', args=(mu, std))
+
+    # Log-normal dağılım
+    shifted = logfc_values - min(logfc_values) + 0.01
+    shape_ln, loc_ln, scale_ln = stats.lognorm.fit(shifted)
+    ks_lognorm = stats.kstest(shifted, 'lognorm', args=(shape_ln, loc_ln, scale_ln))
+
+    # Gamma dağılım
+    a_g, loc_g, scale_g = stats.gamma.fit(shifted)
+    ks_gamma = stats.kstest(shifted, 'gamma', args=(a_g, loc_g, scale_g))
+
+    # Sonuçları yazdır
+    print(f"{cluster_label} - {pathway_name}")
+    print("  Normal dağılım:     D=%.3f, p=%.3f" % ks_norm)
+    print("  Log-normal dağılım: D=%.3f, p=%.3f" % ks_lognorm)
+    print("  Gamma dağılım:      D=%.3f, p=%.3f" % ks_gamma)
+    print()
+
+# Tüm pathway'ler için çalıştır
+for pw in cluster_2_pathways:
+    gene_list = globals().get(f"epit_cluster_2_{pw}", [])
+    analyze_distribution(gene_list, df_cluster_2, "Cluster 2", pw)
+
+for pw in cluster_3_pathways:
+    gene_list = globals().get(f"epit_cluster_3_{pw}", [])
+    analyze_distribution(gene_list, df_cluster_3, "Cluster 3", pw)
+
+################
+
+#olasiliklari prior probablty olarak aliyorum simdi
+# Dağılım parametrelerini saklamak için sözlük
+distribution_results = {}
+
+# Fonksiyon: dağılım analizi yap ve parametreleri kaydet
+def analyze_and_store_distribution(gene_list, df, cluster_label, pathway_name):
+    logfc_values = df[df['gene'].isin(gene_list)]['log2FC'].dropna().values
+    if len(logfc_values) < 3:
+        return
+
+    shifted = logfc_values - min(logfc_values) + 0.01
+
+    # Uyum testleri
+    mu, std = stats.norm.fit(logfc_values)
+    ks_norm = stats.kstest(logfc_values, 'norm', args=(mu, std))
+
+    shape_ln, loc_ln, scale_ln = stats.lognorm.fit(shifted)
+    ks_lognorm = stats.kstest(shifted, 'lognorm', args=(shape_ln, loc_ln, scale_ln))
+
+    a_g, loc_g, scale_g = stats.gamma.fit(shifted)
+    ks_gamma = stats.kstest(shifted, 'gamma', args=(a_g, loc_g, scale_g))
+
+    # En uygun dağılımı seç (p > 0.05 olan ve D skoru en düşük olan)
+    distributions = {
+        "normal": {"p": ks_norm.pvalue, "D": ks_norm.statistic, "params": {"mu": mu, "std": std}},
+        "lognormal": {"p": ks_lognorm.pvalue, "D": ks_lognorm.statistic, "params": {"shape": shape_ln, "loc": loc_ln, "scale": scale_ln}},
+        "gamma": {"p": ks_gamma.pvalue, "D": ks_gamma.statistic, "params": {"a": a_g, "loc": loc_g, "scale": scale_g}},
+    }
+
+    # Filtrele: sadece p > 0.05 olanlar
+    valid = {k: v for k, v in distributions.items() if v["p"] > 0.05}
+    if valid:
+        best_fit = min(valid.items(), key=lambda x: x[1]["D"])  # D skoru en düşük olan
+        distribution_results[f"{cluster_label}_{pathway_name}"] = {
+            "distribution": best_fit[0],
+            "params": best_fit[1]["params"],
+            "p_value": best_fit[1]["p"],
+            "D": best_fit[1]["D"]
+        }
+
+# Uygula
+for pw in cluster_2_pathways:
+    gene_list = globals().get(f"epit_cluster_2_{pw}", [])
+    analyze_and_store_distribution(gene_list, df_cluster_2, "cluster2", pw)
+
+for pw in cluster_3_pathways:
+    gene_list = globals().get(f"epit_cluster_3_{pw}", [])
+    analyze_and_store_distribution(gene_list, df_cluster_3, "cluster3", pw)
+
+# Sonuçları göster
+import pprint
+pprint.pprint(distribution_results)
+
+########## olasilik dagilmi aliyorum
+# Tüm gen setlerini birleştiriyoruz
+gene_sets = {
+    "cluster2_exocytosis": epit_cluster_2_exocytosis,
+    "cluster3_exocytosis": epit_cluster_3_exocytosis,
+    "cluster2_fatty_acid_oxidation": epit_cluster_2_fatty_acid_oxidation,
+    "cluster3_fatty_acid_oxidation": epit_cluster_3_fatty_acid_oxidation,
+    "cluster2_angiogenesis": epit_cluster_2_angiogenesis,
+    "cluster3_angiogenesis": epit_cluster_3_angiogenesis,
+    "cluster2_ros_metabolism": epit_cluster_2_ros_metabolism,
+    "cluster3_ros_metabolism": epit_cluster_3_ros_metabolism,
+    "cluster2_lipid_biosynthesis": epit_cluster_2_lipid_biosynthesis,
+    "cluster3_lipid_biosynthesis": epit_cluster_3_lipid_biosynthesis,
+    "cluster2_ca_signaling": epit_cluster_2_ca_signaling,
+    "cluster3_ca_signaling": epit_cluster_3_ca_signaling,
+    "cluster2_gpcr_activity": epit_cluster_2_gpcr_activity,
+    "cluster3_gpcr_activity": epit_cluster_3_gpcr_activity,
+    "cluster2_mapk": epit_cluster_2_mapk,
+    "cluster3_mapk": epit_cluster_3_mapk,
+    "cluster2_response_to_nutrient": epit_cluster_2_response_to_nutrient,
+    "cluster3_response_to_nutrient": epit_cluster_3_response_to_nutrient,
+    "cluster2_lipid_metabolism": epit_cluster_2_lipid_metabolism,
+    "cluster3_lipid_metabolism": epit_cluster_3_lipid_metabolism,
+    "cluster2_aa_metabolism": epit_cluster_2_aa_metabolism,
+    "cluster3_aa_metabolism": epit_cluster_3_aa_metabolism,
+    "cluster2_senescence": epit_cluster_2_senescence,
+    "cluster3_senescence": epit_cluster_3_senescence,
+    "cluster2_mitochondrial": epit_cluster_2_mitochondrial,
+    "cluster3_mitochondrial": epit_cluster_3_mitochondrial,
+    "cluster2_response_to_er_stress": epit_cluster_2_response_to_er_stress,
+    "cluster3_response_to_er_stress": epit_cluster_3_response_to_er_stress,
+    "cluster2_cell_migration": epit_cluster_2_cell_migration,
+    "cluster3_cell_migration": epit_cluster_3_cell_migration,
+    "cluster2_proliferation": epit_cluster_2_proliferation,
+    "cluster3_proliferation": epit_cluster_3_proliferation,
+    "cluster2_response_to_unfolded_protein": epit_cluster_2_response_to_unfolded_protein,
+    "cluster3_response_to_unfolded_protein": epit_cluster_3_response_to_unfolded_protein
+}
+from scipy.stats import norm, lognorm, gamma
+
+
+# Mevcut dağılım fonksiyonları
+distribution_functions = {
+    "normal": lambda x, params: (
+        norm.pdf(x, loc=params["mu"], scale=params["std"]),
+        norm.cdf(x, loc=params["mu"], scale=params["std"])
+    ),
+    "lognormal": lambda x, params: (
+        lognorm.pdf(x - min(x) + 0.01, s=params["shape"], loc=params["loc"], scale=params["scale"]),
+        lognorm.cdf(x - min(x) + 0.01, s=params["shape"], loc=params["loc"], scale=params["scale"])
+    ),
+    "gamma": lambda x, params: (
+        gamma.pdf(x - min(x) + 0.01, a=params["a"], loc=params["loc"], scale=params["scale"]),
+        gamma.cdf(x - min(x) + 0.01, a=params["a"], loc=params["loc"], scale=params["scale"])
+    )
+}
+
+# Genetik olasılık skorları için sonuç sözlüğü
+gene_probability_scores = {}
+
+# PDF ve CDF hesapla (analiz yapılmaz, sadece daha önce hesaplanan dağılıma göre)
+for label, gene_list in gene_sets.items():
+    if label not in distribution_results:
+        continue  # Eğer dağılım sonucu yoksa atla
+
+    cluster = label.split("_")[0]
+    df = df_cluster_2 if cluster == "cluster2" else df_cluster_3
+
+    logfc_df = df[df["gene"].isin(gene_list)][["gene", "log2FC"]].dropna()
+    if logfc_df.empty:
+        continue
+
+    values = logfc_df["log2FC"].values
+    params = distribution_results[label]["params"]
+    dist_type = distribution_results[label]["distribution"]
+    dist_func = distribution_functions[dist_type]
+
+    pdfs, cdfs = dist_func(values, params)
+    gene_pdf_cdf = {
+        gene: {"pdf": pdf, "cdf": cdf}
+        for gene, pdf, cdf in zip(logfc_df["gene"], pdfs, cdfs)
+    }
+
+    gene_probability_scores[label] = gene_pdf_cdf
+
+# Sonuçları göster
+import pprint
+pprint.pprint(gene_probability_scores)
+
+
+############
+
+#kaydetmeye caliyorum
+
+import pandas as pd
+
+# Sözlüğü uzun formata dönüştür
+records = []
+for gene, probs in gene_probability_scores.items():
+    record = {"gene": gene}
+    record.update(probs)  # 'pdf', 'cdf', 'pathway', 'cluster' gibi alanlar varsa
+    records.append(record)
+
+# DataFrame oluştur
+df_probs = pd.DataFrame(records)
+
+from pathlib import Path
+
+desktop = Path.home() / "Desktop"
+df_probs.to_excel(desktop / "gene_probabilities.xlsx", index=False)
+
+
+########
+#yukaridaki cok kotu kaydetti duzgun kaydetmeye caliyorum
+
+import pandas as pd
+
+# Mevcut sözlük: gene -> {'pdf': ..., 'cdf': ...}
+# Örnek: gene_probabilities = {'GENE1': {'pdf': 1.23, 'cdf': 0.87}, ...}
+
+# Bunu düzgün bir DataFrame’e çevir:
+df_probs_clean = pd.DataFrame([
+    {'gene': gene, 'pdf': vals['pdf'], 'cdf': vals['cdf']}
+    for gene, vals in gene_probabilities.items()
+])
+
+# Masaüstüne düzgün şekilde kaydet (kendi kullanıcı adını gir)
+df_probs_clean.to_excel("/Users/lemannur/Desktop/gene_probabilities_clean.xlsx", index=False)
